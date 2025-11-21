@@ -1,3 +1,4 @@
+use uuid::Uuid;
 use std::io::{Read, Write};
 use serde::{Serialize, Deserialize};
 use std::net::{TcpListener, TcpStream};
@@ -12,7 +13,7 @@ const INTERNAL_SERVER_ERROR: &str = "HTTP/1.1 500 INTERNAL SERVER ERROR\r\n\r\n"
 #[derive(Serialize, Deserialize)]
 struct User
 {
-    id: Option<i32>,
+    id: Option<Uuid>,
 
     name: String,
 }
@@ -76,7 +77,7 @@ fn handle_client(mut stream: TcpStream)
 // get a user with the matching id
 fn handle_get_request(request: &str) -> (String, String)
 {
-    match (get_user_id(&request).parse::<i32>(), Client::connect(DB_URL.unwrap_or(""), NoTls))
+    match (get_user_id(&request).parse::<Uuid>(), Client::connect(DB_URL.unwrap_or(""), NoTls))
     {
         (Ok(id), Ok(mut client)) =>
             match client.query_one("SELECT * FROM users WHERE id = $1", &[&id])
@@ -135,7 +136,7 @@ fn handle_post_request(request: &str) -> (String, String)
 // update a user with the matching id
 fn handle_put_request(request: &str) -> (String, String)
 {
-    match (get_user_id(&request).parse::<i32>(), get_user_request_body(&request), Client::connect(DB_URL.unwrap_or(""), NoTls))
+    match (get_user_id(&request).parse::<Uuid>(), get_user_request_body(&request), Client::connect(DB_URL.unwrap_or(""), NoTls))
     {
         (Ok(id), Ok(user), Ok(mut client)) =>
         {
@@ -151,7 +152,7 @@ fn handle_put_request(request: &str) -> (String, String)
 // delete a user with the matching id
 fn handle_delete_request(request: &str) -> (String, String)
 {
-    match (get_user_id(&request).parse::<i32>(), Client::connect(DB_URL.unwrap_or(""), NoTls))
+    match (get_user_id(&request).parse::<Uuid>(), Client::connect(DB_URL.unwrap_or(""), NoTls))
     {
         (Ok(id), Ok(mut client)) =>
         {
@@ -173,11 +174,14 @@ fn setup_database() -> Result<(), Error>
     // connect to the database
     let mut client: Client = Client::connect(DB_URL.unwrap_or(""), NoTls)?;
 
+    // add a module for generating uuids
+    client.batch_execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")?;
+
     // create the table
     client.batch_execute(
         "CREATE TABLE IF NOT EXISTS users
         (
-            id SERIAL PRIMARY KEY,
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
             name TEXT NOT NULL
         );"
