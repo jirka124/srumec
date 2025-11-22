@@ -16,6 +16,9 @@ struct User
     id: Option<Uuid>,
 
     name: String,
+    email: String,
+    role: Option<String>,
+    banned: Option<bool>,
 }
 
 fn main()
@@ -84,7 +87,7 @@ fn handle_get_request(request: &str) -> (String, String)
             {
                 Ok(row) =>
                 {
-                    let user = User { id: row.get(0), name: row.get(1) };
+                    let user = User { id: row.get(0), name: row.get(1), email: row.get(2), role: row.get(3), banned: row.get(4) };
 
                     (OK_RESPONSE.to_string(), serde_json::to_string(&user).unwrap())
                 }
@@ -107,7 +110,7 @@ fn handle_get_all_request(_request: &str) -> (String, String)
 
             for row in client.query("SELECT * FROM users", &[]).unwrap()
             {
-                users.push(User { id: row.get(0), name: row.get(1) });
+                users.push(User { id: row.get(0), name: row.get(1), email: row.get(2), role: row.get(3), banned: row.get(4) });
             }
 
             (OK_RESPONSE.to_string(), serde_json::to_string(&users).unwrap())
@@ -124,7 +127,7 @@ fn handle_post_request(request: &str) -> (String, String)
     {
         (Ok(user), Ok(mut client)) =>
         {
-            client.execute("INSERT INTO users (name) VALUES ($1)", &[&user.name]).unwrap();
+            client.execute("INSERT INTO users (name, email) VALUES ($1, $2)", &[&user.name, &user.email]).unwrap();
 
             (OK_RESPONSE.to_string(), "User created successfully.".to_string())
         }
@@ -140,7 +143,7 @@ fn handle_put_request(request: &str) -> (String, String)
     {
         (Ok(id), Ok(user), Ok(mut client)) =>
         {
-            client.execute("UPDATE users SET name = $1 WHERE id = $2", &[&user.name, &id]).unwrap();
+            client.execute("UPDATE users SET name = $1, email = $2, role = $3, banned = $4 WHERE id = $5", &[&user.name, &user.email, &user.role, &user.banned, &id]).unwrap();
 
             (OK_RESPONSE.to_string(), "User updated successfully.".to_string())
         }
@@ -183,7 +186,10 @@ fn setup_database() -> Result<(), Error>
         (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-            name TEXT NOT NULL
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'user',
+            banned BOOLEAN DEFAULT FALSE
         );"
     )?;
 
