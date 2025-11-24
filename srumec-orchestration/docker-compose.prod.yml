@@ -1,0 +1,30 @@
+services:
+  events-service:
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+      target: prod
+    command: npm run start
+    env_file:
+      - ../srumec-events-service/.env.prod
+    ports:
+      - "4000:4000"
+    networks:
+      - shrumec-net
+
+  events-postgres:
+    networks:
+      - shrumec-net
+
+  pgadmin:
+    networks:
+      - shrumec-net
+
+  rabbitmq-service:
+    networks:
+      - shrumec-net
+
+
+networks:
+  shrumec-net:
+    driver: bridge

@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  rabbitmq-service:
+    container_name: rabbitmq-service
+    build: ../srumec-rabbitmq-service
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  events-service:
+    container_name: events-service
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+    env_file:
+      - ../srumec-events-service/.env
+    depends_on:
+    - events-postgres
+
+  events-postgres:
+    container_name: events-postgres
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: events
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+    - ../srumec-events-service/postgres-db/init:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5431:80"
+    depends_on:
+      - events-postgres
+    
+

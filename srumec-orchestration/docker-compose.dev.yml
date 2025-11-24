@@ -1,0 +1,14 @@
+services:
+  events-service:
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+      target: dev
+    command: npm run dev
+    volumes:
+      - ../srumec-events-service:/app
+      - /app/node_modules
+    env_file:
+      - ../srumec-events-service/.env.dev
+    ports:
+      - "4000:4000"
