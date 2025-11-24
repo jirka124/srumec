@@ -1,0 +1,26 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: shrumec-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - shrumec-net
+
+  sandbox:
+    build:
+      context: ..
+      dockerfile: sandbox/Dockerfile
+    container_name: shrumec-rabbitmq-sandbox
+    depends_on:
+      - rabbitmq
+    env_file:
+      - .env
+    networks:
+      - shrumec-net
+    command: ["node", "sandbox/test.js"]
+
+networks:
+  shrumec-net:
+    driver: bridge
