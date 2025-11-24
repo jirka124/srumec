@@ -1,0 +1,45 @@
+{
+  "users": [
+    {
+      "name": "admin",
+      "password": "admin",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    { "name": "/" }
+  ],
+  "permissions": [
+    {
+      "user": "admin",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "queues": [
+    { "name": "events", "vhost": "/", "durable": true },
+    { "name": "chat_messages", "vhost": "/", "durable": true }
+  ],
+  "exchanges": [
+    { "name": "events_exchange", "vhost": "/", "type": "direct", "durable": true },
+    { "name": "chat_exchange", "vhost": "/", "type": "direct", "durable": true }
+  ],
+  "bindings": [
+    {
+      "source": "events_exchange",
+      "vhost": "/",
+      "destination": "events",
+      "destination_type": "queue",
+      "routing_key": "events"
+    },
+    {
+      "source": "chat_exchange",
+      "vhost": "/",
+      "destination": "chat_messages",
+      "destination_type": "queue",
+      "routing_key": "chat"
+    }
+  ]
+}
