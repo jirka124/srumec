@@ -12,3 +12,17 @@ services:
       - ../srumec-events-service/.env.dev
     ports:
       - "4000:4000"
+
+  chats-service:
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+      target: dev
+    command: npm run dev
+    volumes:
+      - ../srumec-chats-service:/app
+      - /app/node_modules
+    env_file:
+      - ../srumec-chats-service/.env.dev
+    ports:
+      - "4001:4000"

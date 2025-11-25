@@ -30,6 +30,28 @@ services:
     volumes:
     - ../srumec-events-service/postgres-db/init:/docker-entrypoint-initdb.d
 
+  chats-service:
+    container_name: chats-service
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+    env_file:
+      - ../srumec-chats-service/.env
+    depends_on:
+    - chats-postgres
+
+  chats-postgres:
+    container_name: chats-postgres
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: chats
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5433:5432"
+    volumes:
+    - ../srumec-chats-service/postgres-db/init:/docker-entrypoint-initdb.d
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin

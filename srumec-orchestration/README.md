@@ -12,9 +12,10 @@ Its purpose is to run all related services in a unified environment for **develo
 The stack includes the following services:
 
 - **Events Service** — Node.js backend processing event data
-- **PostgreSQL + PostGIS** — database for the Events Service
+- **Chats Service** — Node.js backend processing chats data
+- **2x PostgreSQL + 1x PostGIS** — database for the Events and Chats Service
 - **RabbitMQ** — message broker
-- **pgAdmin 4** — web UI for managing the PostgreSQL database
+- **pgAdmin 4** — web UI for managing the PostgreSQL databases
 
 This repository contains **only orchestration**.  
 Source code for services lives in their respective repositories:
@@ -43,7 +44,9 @@ Source code for services lives in their respective repositories:
 ### **1. Events Service**
 
 - Node.js backend processing event data
-- Port: `4000`
+- Port:
+  - exposed: `4000`
+  - internal: `4000`
 
 Event Service Docs (Redoc):
 ➡ http://localhost:4000/docs
@@ -54,12 +57,31 @@ Event Service Docs (Swagger):
 Event Service Docs (OpenAPI json):
 ➡ http://localhost:4000/docs-raw
 
-### **2. PostgreSQL + PostGIS**
+### **2. Chats Service**
+
+- Node.js backend processing chat data
+- Port:
+  - exposed: `4001`
+  - internal: `4000`
+
+Chat Service Docs (Redoc):
+➡ http://localhost:4001/docs
+
+Chat Service Docs (Swagger):
+➡ http://localhost:4001/docs-swagger
+
+Chat Service Docs (OpenAPI json):
+➡ http://localhost:4001/docs-raw
+
+### **3. PostgreSQL + PostGIS**
 
 - Database for the Events Service
 - Port: `5672`
+- Port:
+  - exposed: `5672`, `5673`
+  - internal: `5672`, `5672`
 
-### **3. RabbitMQ**
+### **4. RabbitMQ**
 
 - RabbitMQ Broker
 - Ports:
@@ -69,7 +91,7 @@ Event Service Docs (OpenAPI json):
 RabbitMQ Management:
 ➡ http://localhost:15672
 
-### **4. pgAdmin 4**
+### **5. pgAdmin 4**
 
 - Web UI for PostgreSQL
 - Port: `5431`
@@ -136,6 +158,8 @@ docker compose restart events-service
 ```sh
 docker compose logs -f events-service
 docker compose logs -f events-postgres
+docker compose logs -f chats-service
+docker compose logs -f chats-postgres
 docker compose logs -f rabbitmq-service
 docker compose logs -f pgadmin
 ```

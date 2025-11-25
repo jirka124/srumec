@@ -16,6 +16,23 @@ services:
     networks:
       - shrumec-net
 
+  chats-service:
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+      target: prod
+    command: npm run start
+    env_file:
+      - ../srumec-chats-service/.env.prod
+    ports:
+      - "4001:4000"
+    networks:
+      - shrumec-net
+
+  chats-postgres:
+    networks:
+      - shrumec-net
+
   pgadmin:
     networks:
       - shrumec-net
