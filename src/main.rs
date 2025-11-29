@@ -131,6 +131,12 @@ fn handle_post_request(request: &str) -> (String, String)
     {
         (Ok(user), Ok(mut client)) =>
         {
+            // check if the email already exists
+            if client.query_one("SELECT EXISTS (SELECT 1 FROM users WHERE email = $1)", &[&user.email]).unwrap().get(0)
+            {
+                return (BAD_REQUEST.to_string(), "Email already exists.".to_string());
+            }
+
             // validate the email
             if !regex_email.is_match(&user.email)
             {
@@ -197,7 +203,7 @@ fn setup_database() -> Result<(), Error>
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
             name TEXT NOT NULL,
-            email TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
             role TEXT NOT NULL DEFAULT 'user',
             banned BOOLEAN DEFAULT FALSE
         );"
