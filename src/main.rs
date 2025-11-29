@@ -1,4 +1,5 @@
 use uuid::Uuid;
+use regex::Regex;
 use std::io::{Read, Write};
 use serde::{Serialize, Deserialize};
 use std::net::{TcpListener, TcpStream};
@@ -7,6 +8,7 @@ use postgres::{Client, NoTls, Error};
 const DB_URL: Option<&'static str> = option_env!("DATABASE_URL");
 
 const NOT_FOUND: &str = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
+const BAD_REQUEST: &str = "HTTP/1.1 400 BAD REQUEST\r\n\r\n";
 const OK_RESPONSE: &str = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n";
 const INTERNAL_SERVER_ERROR: &str = "HTTP/1.1 500 INTERNAL SERVER ERROR\r\n\r\n";
 
@@ -123,10 +125,18 @@ fn handle_get_all_request(_request: &str) -> (String, String)
 // add a user
 fn handle_post_request(request: &str) -> (String, String)
 {
+    let regex_email: Regex = Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap();
+
     match (get_user_request_body(&request), Client::connect(DB_URL.unwrap_or(""), NoTls))
     {
         (Ok(user), Ok(mut client)) =>
         {
+            // validate the email
+            if !regex_email.is_match(&user.email)
+            {
+                return (BAD_REQUEST.to_string(), "Invalid email format.".to_string());
+            }
+
             client.execute("INSERT INTO users (name, email) VALUES ($1, $2)", &[&user.name, &user.email]).unwrap();
 
             (OK_RESPONSE.to_string(), "User created successfully.".to_string())
