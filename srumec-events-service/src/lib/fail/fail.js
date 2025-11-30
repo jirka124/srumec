@@ -1,3 +1,5 @@
+import { LOG_LEVELS } from "#lib/log/log.js";
+
 const { DEBUG_LEVEL_SERVER = "AVG", DEBUG_LEVEL_CLIENT = "AVG" } = process.env;
 
 export const DEBUG_LEVELS = Object.freeze({
@@ -6,11 +8,13 @@ export const DEBUG_LEVELS = Object.freeze({
   MIN: "MIN",
 });
 
-class Fail {
-  constructor(failHash, message, detail) {
+export class Fail {
+  constructor(failHash, message, detail, code, logger) {
     this.failHash = failHash;
     if (message) this.message = message;
     if (detail) this.detail = detail;
+    if (code) this.code = code;
+    if (logger) this.logger = logger;
   }
 
   serverPrepare() {
@@ -38,7 +42,9 @@ class Fail {
 
     if (level === DEBUG_LEVELS.AVG || level === DEBUG_LEVELS.MAX)
       fail.message = this.message;
-    if (level === DEBUG_LEVELS.MAX) fail.detail = this.detail;
+    if (level === DEBUG_LEVELS.MAX) {
+      fail.detail = this.detail;
+    }
 
     return fail;
   }
@@ -47,48 +53,91 @@ class Fail {
 export const fails = {
   kpAykR5UXDLMdLFK: {
     message: "Invalid request parameters",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 400,
+  },
+  rL1h3Y7SJ11lL0Y2: {
+    message: "UNHANDLED_ERROR",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   "1TgWGUTBV3UTogTc": {
     message: "Failed to get nearby events",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   iC2V355CDCYFTI9J: {
     message: "Failed to get event by id",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
   },
   d5xC5Hfd9L4qN5Oc: {
     message: "Failed to get event by id",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   T0UXlS6xs2tvp2hJ: {
     message: "Failed to create event",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   "8sNY4yBPBmlQdV2n": {
     message: "Failed to update event",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
   },
   pT6xNrqqC6PAV20J: {
     message: "Failed to update event",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   TwlcQjNvJpEhfnLz: {
     message: "Failed to delete event",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   uzgMMFIN6JCaB7ER: {
     message: "Failed to fetch comments",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   cOxyZuGDMDUqgzyD: {
     message: "Failed to create comment",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   gFVBfVaogwjLe1CK: {
     message: "Failed to update comment",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
   },
   ZZu4ghBUlxie7YA5: {
     message: "Failed to update comment",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
   LgG6bt5I163ufpmi: {
     message: "Failed to delete comment",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
   },
 };
 
+export const isFail = (fail) => {
+  return fail instanceof Fail;
+};
+
 export const produceFail = (failHash, detail = null) => {
+  if (isFail(detail)) return detail;
+
   if (Object.hasOwn(fails, failHash))
-    return new Fail(failHash, fails[failHash].message, detail);
+    return new Fail(
+      failHash,
+      fails[failHash].message,
+      detail,
+      fails[failHash].code,
+      fails[failHash].logLevel
+    );
 
   throw new Error("Fail not found");
 };

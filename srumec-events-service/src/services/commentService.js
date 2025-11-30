@@ -1,8 +1,11 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
+import { logger } from "#lib/log/log.js";
 
 export const commentService = {
   async getAll(event_ref) {
+    logger.info('Executing "getAll" service with params: ', event_ref);
+
     const rows = await db.execute(sql`
       SELECT 
         id,
@@ -16,10 +19,14 @@ export const commentService = {
       ORDER BY create_time ASC;
     `);
 
+    logger.info('Executed "getAll" service with params: ', event_ref);
+
     return rows;
   },
 
   async createOne(data) {
+    logger.info('Executing "createOne" service with params: ', data);
+
     const columns = ["event_ref", "user_ref", "reply_to_ref", "content"];
     const values = [
       data.event_ref,
@@ -53,10 +60,14 @@ export const commentService = {
         to_iso (create_time) AS create_time;
     `);
 
+    logger.info('Executed "createOne" service with params: ', data);
+
     return result[0];
   },
 
   async updateOne(data) {
+    logger.info('Executing "updateOne" service with params: ', data);
+
     const updates = [];
 
     if (data.content !== undefined) {
@@ -96,10 +107,14 @@ export const commentService = {
         to_iso (create_time) AS create_time;
     `);
 
+    logger.info('Executed "updateOne" service with params: ', data);
+
     return result[0] ?? null;
   },
 
   async deleteOne({ id }) {
+    logger.info('Executing "deleteOne" service with params: ', { id });
+
     const result = await db.execute(sql`
       DELETE FROM event_comments
       WHERE id = ${id}

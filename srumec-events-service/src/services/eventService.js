@@ -1,8 +1,15 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
+import { logger } from "#lib/log/log.js";
 
 export const eventService = {
   async getNearbyEvents({ latitude, longitude, radius_m }) {
+    logger.info('Executing "getNearbyEvents" service with params: ', {
+      latitude,
+      longitude,
+      radius_m,
+    });
+
     const rows = await db.execute(sql`
     SELECT
       id,
@@ -20,10 +27,20 @@ export const eventService = {
     );
   `);
 
+    logger.info('Executed "getNearbyEvents" service with params: ', {
+      latitude,
+      longitude,
+      radius_m,
+    });
+
     return rows;
   },
 
   async getEventById({ id }) {
+    logger.info('Executing "getEventById" service with params: ', {
+      id,
+    });
+
     const rows = await db.execute(sql`
     SELECT
       id,
@@ -37,10 +54,16 @@ export const eventService = {
     WHERE id = ${id};
   `);
 
+    logger.info('Executed "getEventById" service with params: ', {
+      id,
+    });
+
     return rows[0] || null;
   },
 
   async createEvent(data) {
+    logger.info('Executing "createEvent" service with params: ', data);
+
     const columns = ["organizer_ref", "title"];
     const values = [data.organizer_ref, data.title];
 
@@ -85,10 +108,14 @@ export const eventService = {
       ST_X(location::geometry) AS longitude;
   `);
 
+    logger.info('Executed "createEvent" service with params: ', data);
+
     return result[0];
   },
 
   async updateEvent(data) {
+    logger.info('Executing "updateEvent" service with params: ', data);
+
     const updates = [];
 
     if (data.title !== undefined) {
@@ -130,15 +157,21 @@ export const eventService = {
       ST_X(location::geometry) AS longitude;
   `);
 
+    logger.info('Executed "updateEvent" service with params: ', data);
+
     return result[0] ?? null;
   },
 
   async deleteEvent({ id }) {
+    logger.info('Executing "deleteEvent" service with params: ', { id });
+
     const result = await db.execute(sql`
     DELETE FROM events
     WHERE id = ${id}
     RETURNING id;
   `);
+
+    logger.info('Executed "deleteEvent" service with params: ', { id });
 
     return result.length;
   },
