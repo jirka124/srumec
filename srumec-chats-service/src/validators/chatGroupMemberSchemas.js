@@ -44,7 +44,7 @@ export const ChatRoomGroupMemberUpdateSchema = z.object({
 export const GetAllGroupMembersReq = z.object({
   group_ref: fields.group_ref,
 });
-export const GetAllGroupMembersRes = z.array(fields.user_ref);
+export const GetAllGroupMembersRes = z.array(ChatRoomGroupMemberSchema);
 
 export const CreateGroupMemberReq = ChatRoomGroupMemberCreateSchema;
 export const CreateGroupMemberRes = ChatRoomGroupMemberSchema;

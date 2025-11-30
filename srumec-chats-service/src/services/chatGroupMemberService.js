@@ -9,7 +9,7 @@ export const service = {
     });
 
     const rows = await db.execute(sql`
-    SELECT user_ref
+    SELECT group_ref, user_ref, role, member_since
     FROM chat_room_group_member
     WHERE group_ref = ${group_ref};
   `);
@@ -18,7 +18,7 @@ export const service = {
       group_ref,
     });
 
-    return rows.map((r) => r.user_ref);
+    return rows;
   },
 
   async createMember(member) {
