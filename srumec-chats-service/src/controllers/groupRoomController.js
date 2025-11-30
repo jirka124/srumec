@@ -1,6 +1,5 @@
 import { service } from "#services/groupRoomService.js";
 import { produceFail } from "#lib/fail/fail.js";
-import { logger } from "#lib/log/log.js";
 
 export const controller = {
   async getAllGroupRooms(req, res) {
@@ -17,9 +16,7 @@ export const controller = {
       const rooms = await service.getAllGroupRooms({ userId });
       return res.json(rooms);
     } catch (e) {
-      const err = produceFail("4c0VJLR0rAqYnQKr", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("4c0VJLR0rAqYnQKr", e);
     }
   },
 
@@ -29,19 +26,15 @@ export const controller = {
       const room = await service.getOneGroupRoom(data);
 
       if (!room) {
-        const err = produceFail(
+        throw produceFail(
           "moyxlkCSZUmZ6oHc",
           `group room with given ID { ${data.id} } not found`
         );
-        logger.info(err.serverPrepare());
-        return res.status(404).json(err.clientPrepare());
       }
 
       return res.json(room);
     } catch (e) {
-      const err = produceFail("ckGAYzNnWCYkhWGV", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("ckGAYzNnWCYkhWGV", e);
     }
   },
 
@@ -52,9 +45,7 @@ export const controller = {
       const created = await service.createOneGroupRoom(data);
       return res.json(created);
     } catch (e) {
-      const err = produceFail("rBtJzMW6EgdCiyh6", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("rBtJzMW6EgdCiyh6", e);
     }
   },
 
@@ -65,9 +56,7 @@ export const controller = {
       const updated = await service.updateOneGroupRoom(data);
       return res.json(updated);
     } catch (e) {
-      const err = produceFail("S6dMzCMOFJ3IiFpx", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("S6dMzCMOFJ3IiFpx", e);
     }
   },
 
@@ -78,9 +67,7 @@ export const controller = {
       const count = await service.deleteOneGroupRoom(data);
       return res.json({ count });
     } catch (e) {
-      const err = produceFail("nRqUUUr431VBaFGq", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("nRqUUUr431VBaFGq", e);
     }
   },
 };

@@ -1,6 +1,6 @@
 {
   "name": "srumec-chats-service",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "homepage": "https://github.com/jirka124/srumec-chats-service#readme",
   "bugs": {
@@ -34,6 +34,7 @@
     "drizzle-kit": "^0.31.7",
     "drizzle-orm": "^0.44.7",
     "express": "^4.18.2",
+    "express-async-error": "^0.0.2",
     "pg": "^8.16.3",
     "postgres": "^3.4.7",
     "redoc-express": "^2.1.3",

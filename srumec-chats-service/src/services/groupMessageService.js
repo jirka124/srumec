@@ -1,8 +1,13 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
+import { logger } from "#lib/log/log.js";
 
 export const service = {
   async getAllGroupMessages({ room_ref }) {
+    logger.info('Executing "getAllGroupMessages" service with params: ', {
+      room_ref,
+    });
+
     const rows = await db.execute(sql`
     SELECT
       id,
@@ -14,10 +19,16 @@ export const service = {
     WHERE room_ref = ${room_ref} AND type = 'group';
   `);
 
+    logger.info('Executed "getAllGroupMessages" service with params: ', {
+      room_ref,
+    });
+
     return rows;
   },
 
   async createGroupMessage(msg) {
+    logger.info('Executing "createGroupMessage" service with params: ', msg);
+
     const columns = [];
     const values = [];
 
@@ -58,10 +69,14 @@ export const service = {
       to_iso(sent_time) AS sent_time;
   `);
 
+    logger.info('Executed "createGroupMessage" service with params: ', msg);
+
     return result[0];
   },
 
   async updateGroupMessage(msg) {
+    logger.info('Executing "updateGroupMessage" service with params: ', msg);
+
     const updates = [];
 
     if (msg.room_ref !== undefined) {
@@ -93,15 +108,21 @@ export const service = {
       to_iso(sent_time) AS sent_time;
   `);
 
+    logger.info('Executed "updateGroupMessage" service with params: ', msg);
+
     return result[0] ?? null;
   },
 
   async deleteGroupMessage({ id }) {
+    logger.info('Executing "deleteGroupMessage" service with params: ', { id });
+
     const result = await db.execute(sql`
     DELETE FROM chat_message
     WHERE id = ${id}
     RETURNING id;
   `);
+
+    logger.info('Executed "deleteGroupMessage" service with params: ', { id });
 
     return result.length;
   },

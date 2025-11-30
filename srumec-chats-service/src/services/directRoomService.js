@@ -1,8 +1,13 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
+import { logger } from "#lib/log/log.js";
 
 export const service = {
   async getAllDirectRooms({ userId }) {
+    logger.info('Executing "getAllDirectRooms" service with params: ', {
+      userId,
+    });
+
     const rows = await db.execute(sql`
     SELECT
       id,
@@ -14,10 +19,16 @@ export const service = {
        OR user_2_ref = ${userId};
   `);
 
+    logger.info('Executed "getAllDirectRooms" service with params: ', {
+      userId,
+    });
+
     return rows;
   },
 
   async getOneDirectRoom({ id }) {
+    logger.info('Executing "getOneDirectRoom" service with params: ', { id });
+
     const rows = await db.execute(sql`
     SELECT
       id,
@@ -28,10 +39,14 @@ export const service = {
     WHERE id = ${id};
   `);
 
+    logger.info('Executed "getOneDirectRoom" service with params: ', { id });
+
     return rows[0] ?? null;
   },
 
   async createOneDirectRoom(room) {
+    logger.info('Executing "createOneDirectRoom" service with params: ', room);
+
     const columns = [];
     const values = [];
 
@@ -66,10 +81,14 @@ export const service = {
       to_iso(create_time) AS create_time;
   `);
 
+    logger.info('Executed "createOneDirectRoom" service with params: ', room);
+
     return result[0];
   },
 
   async updateOneDirectRoom(room) {
+    logger.info('Executing "updateOneDirectRoom" service with params: ', room);
+
     const updates = [];
 
     if (room.user_1_ref !== undefined) {
@@ -99,15 +118,23 @@ export const service = {
       to_iso(create_time) AS create_time;
   `);
 
+    logger.info('Executed "updateOneDirectRoom" service with params: ', room);
+
     return rows[0] ?? null;
   },
 
   async deleteOneDirectRoom({ id }) {
+    logger.info('Executing "deleteOneDirectRoom" service with params: ', {
+      id,
+    });
+
     const rows = await db.execute(sql`
     DELETE FROM chat_room_direct
     WHERE id = ${id}
     RETURNING id;
   `);
+
+    logger.info('Executed "deleteOneDirectRoom" service with params: ', { id });
 
     return rows.length;
   },

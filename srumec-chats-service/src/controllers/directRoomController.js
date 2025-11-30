@@ -1,6 +1,5 @@
 import { service } from "#services/directRoomService.js";
 import { produceFail } from "#lib/fail/fail.js";
-import { logger } from "#lib/log/log.js";
 
 export const controller = {
   async getAllDirectRooms(req, res) {
@@ -17,9 +16,7 @@ export const controller = {
       const rooms = await service.getAllDirectRooms({ userId });
       return res.json(rooms);
     } catch (e) {
-      const err = produceFail("TJdMl5QKdmUjneJi", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("TJdMl5QKdmUjneJi", e);
     }
   },
 
@@ -29,19 +26,15 @@ export const controller = {
       const room = await service.getOneDirectRoom(data);
 
       if (!room) {
-        const err = produceFail(
+        throw produceFail(
           "5DkTtaIOyxYvO41n",
           `direct room with given ID { ${data.id} } not found`
         );
-        logger.info(err.serverPrepare());
-        return res.status(404).json(err.clientPrepare());
       }
 
       return res.json(room);
     } catch (e) {
-      const err = produceFail("dPzicAmhxPQV3TiR", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("dPzicAmhxPQV3TiR", e);
     }
   },
 
@@ -52,9 +45,7 @@ export const controller = {
       const created = await service.createOneDirectRoom(data);
       return res.json(created);
     } catch (e) {
-      const err = produceFail("bxJIfB6nxlSOzTGk", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("bxJIfB6nxlSOzTGk", e);
     }
   },
 
@@ -65,9 +56,7 @@ export const controller = {
       const updated = await service.updateOneDirectRoom(data);
       return res.json(updated);
     } catch (e) {
-      const err = produceFail("MGhHfSA5nuALyYuy", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("MGhHfSA5nuALyYuy", e);
     }
   },
 
@@ -78,9 +67,7 @@ export const controller = {
       const count = await service.deleteOneDirectRoom(data);
       return res.json({ count });
     } catch (e) {
-      const err = produceFail("8m4JFoHIruZf8iHc", e);
-      logger.error(err.serverPrepare());
-      return res.status(500).json(err.clientPrepare());
+      throw produceFail("8m4JFoHIruZf8iHc", e);
     }
   },
 };

@@ -1,8 +1,13 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
+import { logger } from "#lib/log/log.js";
 
 export const service = {
   async getAllGroupRooms({ userId }) {
+    logger.info('Executing "getAllGroupRooms" service with params: ', {
+      userId,
+    });
+
     const rows = await db.execute(sql`
     SELECT
       g.id,
@@ -14,10 +19,16 @@ export const service = {
     WHERE m.user_ref = ${userId};
   `);
 
+    logger.info('Executed "getAllGroupRooms" service with params: ', {
+      userId,
+    });
+
     return rows;
   },
 
   async getOneGroupRoom({ id }) {
+    logger.info('Executing "getOneGroupRoom" service with params: ', { id });
+
     const rows = await db.execute(sql`
     SELECT
       id,
@@ -27,10 +38,14 @@ export const service = {
     WHERE id = ${id};
   `);
 
+    logger.info('Executing "getOneGroupRoom" service with params: ', { id });
+
     return rows[0] ?? null;
   },
 
   async createOneGroupRoom(room) {
+    logger.info('Executing "createOneGroupRoom" service with params: ', room);
+
     const cols = [];
     const vals = [];
 
@@ -59,10 +74,14 @@ export const service = {
       to_iso(create_time) AS create_time;
   `);
 
+    logger.info('Executed "createOneGroupRoom" service with params: ', room);
+
     return result[0];
   },
 
   async updateOneGroupRoom(room) {
+    logger.info('Executing "updateOneGroupRoom" service with params: ', room);
+
     const updates = [];
 
     if (room.name !== undefined) {
@@ -87,15 +106,21 @@ export const service = {
       to_iso(create_time) AS create_time;
   `);
 
+    logger.info('Executed "updateOneGroupRoom" service with params: ', room);
+
     return result[0] ?? null;
   },
 
   async deleteOneGroupRoom({ id }) {
+    logger.info('Executing "deleteOneGroupRoom" service with params: ', { id });
+
     const result = await db.execute(sql`
     DELETE FROM chat_room_group
     WHERE id = ${id}
     RETURNING id;
   `);
+
+    logger.info('Executed "deleteOneGroupRoom" service with params: ', { id });
 
     return result.length;
   },

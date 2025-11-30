@@ -1,9 +1,9 @@
 export const LOG_LEVELS = Object.freeze({
-  DEBUG: 10,
-  INFO: 20,
-  WARN: 30,
-  ERROR: 40,
-  FATAL: 50,
+  DEBUG: { literal: "debug", priority: 10 },
+  INFO: { literal: "info", priority: 20 },
+  WARN: { literal: "warn", priority: 30 },
+  ERROR: { literal: "error", priority: 40 },
+  FATAL: { literal: "fatal", priority: 50 },
 });
 
 const { LOG_LEVEL = "WARN" } = process.env;
@@ -35,7 +35,7 @@ class Logger {
   }
 
   #log(level, consoleFn, ...args) {
-    if (level >= this.level) {
+    if (level.priority >= this.level.priority) {
       consoleFn(...args);
     }
   }

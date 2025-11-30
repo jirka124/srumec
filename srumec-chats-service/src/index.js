@@ -1,4 +1,5 @@
 import express from "express";
+import errorHandler from "express-async-error";
 import swaggerUi from "swagger-ui-express";
 import redocExpress from "redoc-express";
 import directRoomRoutes from "#routes/directRoomRoutes.js";
@@ -8,14 +9,16 @@ import directMessageRoutes from "#routes/directMessageRoutes.js";
 import groupMessageRoutes from "#routes/groupMessageRoutes.js";
 import { generateOpenApiSpec } from "#root/docs/openapi.js";
 import { logger } from "#lib/log/log.js";
-import { produceFail } from "#lib/fail/fail.js";
+import { catchError } from "#middleware/error-catcher.js";
+import { logEndpoint } from "#middleware/endpoint-log.js";
 
 const openApiSpec = generateOpenApiSpec();
-
 const app = express();
-app.use(express.json());
-
 const PORT = process.env.PORT || 4000;
+
+app.use(errorHandler.Handler());
+app.use(express.json());
+app.use(logEndpoint);
 
 app.get("/", (req, res) => {
   res.send("Chats service is running");
@@ -40,6 +43,8 @@ app.use("/docs-swagger", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 app.get("/docs-raw", (req, res) => {
   res.json(openApiSpec);
 });
+
+app.use(catchError);
 
 app.listen(PORT, () => {
   logger.info(`Chats service listening on port ${PORT}`);

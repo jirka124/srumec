@@ -1,8 +1,13 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
+import { logger } from "#lib/log/log.js";
 
 export const service = {
   async getAllDirectMessages({ room_ref }) {
+    logger.info('Executing "getAllDirectMessages" service with params: ', {
+      room_ref,
+    });
+
     const rows = await db.execute(sql`
     SELECT
       id,
@@ -14,10 +19,16 @@ export const service = {
     WHERE room_ref = ${room_ref} AND type = 'direct';
   `);
 
+    logger.info('Executed "getAllDirectMessages" service with params: ', {
+      room_ref,
+    });
+
     return rows;
   },
 
   async createDirectMessage(msg) {
+    logger.info('Executing "createDirectMessage" service with params: ', msg);
+
     const cols = [];
     const vals = [];
 
@@ -59,10 +70,14 @@ export const service = {
       to_iso(sent_time) AS sent_time;
   `);
 
+    logger.info('Executed "createDirectMessage" service with params: ', msg);
+
     return result[0];
   },
 
   async updateDirectMessage(msg) {
+    logger.info('Executing "updateDirectMessage" service with params: ', msg);
+
     const updates = [];
 
     if (msg.room_ref !== undefined) {
@@ -97,15 +112,23 @@ export const service = {
       to_iso(sent_time) AS sent_time;
   `);
 
+    logger.info('Executed "updateDirectMessage" service with params: ', msg);
+
     return rows[0] ?? null;
   },
 
   async deleteDirectMessage({ id }) {
+    logger.info('Executing "deleteDirectMessage" service with params: ', {
+      id,
+    });
+
     const rows = await db.execute(sql`
     DELETE FROM chat_message
     WHERE id = ${id}
     RETURNING id;
   `);
+
+    logger.info('Executed "deleteDirectMessage" service with params: ', { id });
 
     return rows.length;
   },
