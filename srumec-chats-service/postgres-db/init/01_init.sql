@@ -89,6 +89,11 @@ RETURNS text AS $$
   SELECT to_char (ts AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.FF6"Z"');
 $$ LANGUAGE sql IMMUTABLE;
 
+CREATE TABLE IF NOT EXISTS seeding_log (
+  service TEXT PRIMARY KEY,
+  seeded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ============================================
 --  END OF FILE
 -- ============================================

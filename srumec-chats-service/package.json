@@ -1,6 +1,6 @@
 {
   "name": "srumec-chats-service",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "homepage": "https://github.com/jirka124/srumec-chats-service#readme",
   "bugs": {
@@ -17,7 +17,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "pm2-dev ecosystem.config.cjs",
-    "start": "pm2-runtime ecosystem.config.cjs"
+    "start": "pm2-runtime ecosystem.config.cjs",
+    "db:seed": "node postgres-db/seed/index.js"
   },
   "imports": {
     "#root/*": "./src/*",
