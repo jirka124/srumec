@@ -1,0 +1,29 @@
+export const prahaEvents = [
+  {
+    title: "Praha – Startup Night",
+    description: "Networking pro zakladatele startupů.",
+    lat: 50.0755,
+    lng: 14.4378,
+    dayOffset: 4,
+    hourOffset: 19,
+    minuteOffset: 0,
+  },
+  {
+    title: "Letná Picnic Meetup",
+    description: "Piknik s výhledem na celou Prahu.",
+    lat: 50.0972,
+    lng: 14.4245,
+    dayOffset: 2,
+    hourOffset: 16,
+    minuteOffset: 45,
+  },
+  {
+    title: "Vinohrady Photo Walk",
+    description: "Walk & shoot session.",
+    lat: 50.0751,
+    lng: 14.4483,
+    dayOffset: 1,
+    hourOffset: 18,
+    minuteOffset: 15,
+  },
+];
