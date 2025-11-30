@@ -26,3 +26,33 @@ services:
       - ../srumec-chats-service/.env.dev
     ports:
       - "4001:4000"
+
+  events-seeder:
+    container_name: events-seeder
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+      target: dev
+    command: ["npm", "run", "db:seed"]
+    volumes:
+      - ../srumec-events-service:/app
+      - /app/node_modules
+    depends_on:
+      - events-postgres
+    env_file:
+      - ../srumec-events-service/.env.dev
+
+  chats-seeder:
+    container_name: chats-seeder
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+      target: dev
+    command: ["npm", "run", "db:seed"]
+    volumes:
+      - ../srumec-chats-service:/app
+      - /app/node_modules
+    depends_on:
+      - chats-postgres
+    env_file:
+      - ../srumec-chats-service/.env.dev
