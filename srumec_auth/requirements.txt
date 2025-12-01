@@ -1,0 +1,19 @@
+# --- FastAPI a Server ---
+fastapi
+uvicorn[standard]
+fastapi-cli
+
+# --- Databáze (PostgreSQL) ---
+sqlalchemy
+psycopg2-binary
+alembic
+
+# --- Konfigurace a Schémata ---
+python-dotenv
+pydantic-settings
+pydantic[email]
+
+# --- Bezpečnost a Autentizace ---
+passlib[bcrypt]
+bcrypt==4.0.1
+python-jose[cryptography]
