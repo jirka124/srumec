@@ -20,7 +20,7 @@ app.use(errorHandler.Handler());
 app.use(express.json());
 app.use(logEndpoint);
 
-app.get("/", (req, res) => {
+app.get("/v1/chats/", (req, res) => {
   res.send("Chats service is running");
 });
 
@@ -32,15 +32,19 @@ app.use("/v1/chats/group/messages", groupMessageRoutes);
 app.use("/v1/chats/group/members", chatGroupMemberRoutes);
 
 app.get(
-  "/docs",
+  "/v1/chats/docs",
   redocExpress({
     title: "Srumec Chats API Docs (ReDoc)",
-    specUrl: "/docs-raw",
+    specUrl: "/v1/chats/docs-raw",
     nonce: "",
   })
 );
-app.use("/docs-swagger", swaggerUi.serve, swaggerUi.setup(openApiSpec));
-app.get("/docs-raw", (req, res) => {
+app.use(
+  "/v1/chats/docs-swagger",
+  swaggerUi.serve,
+  swaggerUi.setup(openApiSpec)
+);
+app.get("/v1/chats/docs-raw", (req, res) => {
   res.json(openApiSpec);
 });
 
