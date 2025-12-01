@@ -1,0 +1,29 @@
+meta {
+  name: Get All Group Rooms
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/v1/chats/group/get-all?id=5ab4d1d4-8013-41b2-9c5f-c355e7f50260
+  body: json
+  auth: bearer
+}
+
+params:query {
+  id: 5ab4d1d4-8013-41b2-9c5f-c355e7f50260
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {}
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

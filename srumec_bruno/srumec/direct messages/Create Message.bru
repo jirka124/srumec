@@ -1,0 +1,29 @@
+meta {
+  name: Create Message
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/v1/chats/direct/messages/create-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "room_ref": "58316ffe-8bda-4d4d-9234-cfc23a3e2eb7",
+    "user_ref": "7ab4d1d4-8013-41b2-9c5f-c355e7f50260",
+    "message": "Hello there 2!",
+    "sent_time": "2025-11-22T21:28:46.533Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

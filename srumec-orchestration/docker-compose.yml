@@ -63,5 +63,46 @@ services:
       - "5431:80"
     depends_on:
       - events-postgres
-    
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ../srumec_auth
+    command: ["fastapi", "dev", "main.py", "--host", "0.0.0.0"]
+    volumes:
+      - ../srumec_auth:/code
+    env_file:
+      - ../srumec_auth/.env
+    depends_on:
+      - auth-postgres
+    entrypoint: /code/entrypoint.sh
+
+  auth-postgres:
+    container_name: auth-postgres
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=srumec_auth
+    ports:
+      - "5434:5432"
+    volumes:
+      - auth_pg_data:/var/lib/postgresql/data
+
+  auth-gateway:
+    container_name: auth-gateway
+    image: nginx:1.25-alpine
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ../srumec_auth/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - auth-service
+
+volumes:
+  events_pg_data:
+  chats_pg_data:
+  auth_pg_data:
 

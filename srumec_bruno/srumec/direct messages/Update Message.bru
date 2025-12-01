@@ -1,0 +1,28 @@
+meta {
+  name: Update Message
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/v1/chats/direct/messages/update-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "11158528-c921-437c-baa2-36ae3659ca7a",
+    "message": "Edited message content",
+    "sent_time": "2025-11-23T12:00:00.000Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

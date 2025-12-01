@@ -1,0 +1,30 @@
+meta {
+  name: Update Message
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/v1/chats/group/messages/update-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "11b4d1d4-8013-41b2-9c5f-c355e7f50260",
+    "room_ref": "5ab4d1d4-8013-41b2-9c5f-c355e7f50260",
+    "user_ref": "6ab4d1d4-8013-41b2-9c5f-c355e7f50260",
+    "message": "Hello there updated!",
+    "sent_time": "2025-11-22T23:28:46.533000+04:00"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

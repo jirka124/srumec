@@ -1,0 +1,34 @@
+meta {
+  name: login
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "user@example.com",
+    "password": "string"
+  }
+}
+
+script:post-response {
+  // Načtení těla odpovědi
+  const body = res.getBody();
+  
+  // Pokud odpověď obsahuje access_token, ulož ho do proměnné prostředí 'token'
+  if (body && body.access_token) {
+      bru.setEnvVar("token", body.access_token);
+      console.log("Token byl úspěšně uložen!");
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

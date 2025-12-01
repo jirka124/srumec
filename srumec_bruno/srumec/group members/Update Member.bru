@@ -1,0 +1,30 @@
+meta {
+  name: Update Member
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/v1/chats/group/members/update-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "group_ref": "5ab4d1d4-8013-41b2-9c5f-c355e7f50260",
+    "user_ref": "6ab4d1d4-8013-41b2-9c5f-c355e7f50260",
+    "role": "admin",
+    "member_since": "2025-12-01T11:00:00.000Z"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

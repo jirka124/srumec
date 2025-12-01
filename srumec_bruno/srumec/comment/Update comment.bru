@@ -1,0 +1,30 @@
+meta {
+  name: Update comment
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/v1/comments/update-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "f49a25e2-28fc-46cc-bb34-024addccc634",
+    "event_ref": "7c0b7df8-c27f-42c3-9d40-8e698cb4a7d1",
+    "user_ref": "a34f1cc4-7dc0-4f0e-85bb-bcd660df4b11",
+    "content": "You sure about that?",
+    "create_time": "2025-11-23T21:52:44Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

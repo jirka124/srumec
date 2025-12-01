@@ -1,0 +1,3 @@
+[submodule "srumec_auth"]
+	path = srumec_auth
+	url = https://github.com/thevidko/srumec_auth.git

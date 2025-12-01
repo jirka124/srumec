@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "srumec",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
