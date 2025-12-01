@@ -1,0 +1,31 @@
+meta {
+  name: Creat event
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8000/v1/events/create-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "organizer_ref": "16e2075e-8893-49d1-869a-7864e536880d",
+    "title": "string",
+    "description": "Hello world",
+    "latitude": 50.087,
+    "longitude": 14.42,
+    "happen_time": "2026-01-01T10:10:24.282728+04:00"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

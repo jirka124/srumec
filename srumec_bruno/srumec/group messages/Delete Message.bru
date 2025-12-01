@@ -1,0 +1,26 @@
+meta {
+  name: Delete Message
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8000/v1/chats/group/messages/delete-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "e19af045-be12-4038-b113-7d75f8d70a1e"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

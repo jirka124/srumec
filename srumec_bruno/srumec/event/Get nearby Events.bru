@@ -1,0 +1,28 @@
+meta {
+  name: Get nearby Events
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/v1/events/get-nearby
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "latitude": 50.087,
+    "longitude": 14.42,
+    "radius_m": 5000
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

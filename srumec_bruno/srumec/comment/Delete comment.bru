@@ -1,0 +1,26 @@
+meta {
+  name: Delete comment
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8000/v1/comments/delete-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "f49a25e2-28fc-46cc-bb34-024addccc634"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

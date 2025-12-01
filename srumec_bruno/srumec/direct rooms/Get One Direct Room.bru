@@ -1,0 +1,26 @@
+meta {
+  name: Get One Direct Room
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/v1/chats/direct/get-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "482958eb-9cd1-43d7-b36f-7ba258948607"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

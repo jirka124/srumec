@@ -1,0 +1,27 @@
+meta {
+  name: Delete Direct Room
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8000/v1/chats/direct/delete-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "ec324d72-9f78-49f2-b68e-75b82c7aeed5"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
