@@ -17,7 +17,7 @@ app.use(errorHandler.Handler());
 app.use(express.json());
 app.use(logEndpoint);
 
-app.get("/", (req, res) => {
+app.get("/v1/events/", (req, res) => {
   res.send("Events service is running");
 });
 
@@ -26,15 +26,19 @@ app.use("/v1/events", eventRoutes);
 app.use("/v1/comments", commentRoutes);
 
 app.get(
-  "/docs",
+  "/v1/events/docs",
   redocExpress({
     title: "Srumec Events API Docs (ReDoc)",
-    specUrl: "/docs-raw",
+    specUrl: "/v1/events/docs-raw",
     nonce: "",
   })
 );
-app.use("/docs-swagger", swaggerUi.serve, swaggerUi.setup(openApiSpec));
-app.get("/docs-raw", (req, res) => {
+app.use(
+  "/v1/events/docs-swagger",
+  swaggerUi.serve,
+  swaggerUi.setup(openApiSpec)
+);
+app.get("/v1/events/docs-raw", (req, res) => {
   res.json(openApiSpec);
 });
 
