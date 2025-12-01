@@ -5,7 +5,6 @@ services:
     container_name: rabbitmq-service
     build: ../srumec-rabbitmq-service
     ports:
-      - "5672:5672"
       - "15672:15672"
 
   events-service:
@@ -25,8 +24,6 @@ services:
       POSTGRES_DB: events
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-    ports:
-      - "5432:5432"
     volumes:
     - ../srumec-events-service/postgres-db/init:/docker-entrypoint-initdb.d
 
@@ -47,8 +44,6 @@ services:
       POSTGRES_DB: chats
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-    ports:
-      - "5433:5432"
     volumes:
     - ../srumec-chats-service/postgres-db/init:/docker-entrypoint-initdb.d
 
@@ -63,5 +58,46 @@ services:
       - "5431:80"
     depends_on:
       - events-postgres
-    
+      - chats-postgres
+      - auth-postgres
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ../srumec_auth
+    command: ["fastapi", "dev", "main.py", "--host", "0.0.0.0"]
+    volumes:
+      - ../srumec_auth:/code
+    env_file:
+      - ../srumec_auth/.env
+    depends_on:
+      - auth-postgres
+    entrypoint: /code/entrypoint.sh
+
+  auth-postgres:
+    container_name: auth-postgres
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=srumec_auth
+    volumes:
+      - auth_pg_data:/var/lib/postgresql/data
+
+  auth-gateway:
+    container_name: auth-gateway
+    image: nginx:1.25-alpine
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ../srumec_auth/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - auth-service
+
+volumes:
+  events_pg_data:
+  chats_pg_data:
+  auth_pg_data:
 

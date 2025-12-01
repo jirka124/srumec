@@ -7,8 +7,6 @@ services:
     command: npm run start
     env_file:
       - ../srumec-events-service/.env.prod
-    ports:
-      - "4000:4000"
     networks:
       - shrumec-net
 
@@ -24,8 +22,6 @@ services:
     command: npm run start
     env_file:
       - ../srumec-chats-service/.env.prod
-    ports:
-      - "4001:4000"
     networks:
       - shrumec-net
 

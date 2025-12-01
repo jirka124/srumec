@@ -13,7 +13,9 @@ The stack includes the following services:
 
 - **Events Service** — Node.js backend processing event data
 - **Chats Service** — Node.js backend processing chats data
-- **2x PostgreSQL + 1x PostGIS** — database for the Events and Chats Service
+- **Auth Service** — Python backend providing functions of AUTH and JWT generation/validation
+- **API Gateway** — Nginx reverse proxy serving as API gateway into cluster
+- **3x PostgreSQL + 1x PostGIS** — database for the Events and Chats Service
 - **RabbitMQ** — message broker
 - **pgAdmin 4** — web UI for managing the PostgreSQL databases
 
@@ -45,53 +47,63 @@ Source code for services lives in their respective repositories:
 
 - Node.js backend processing event data
 - Port:
-  - exposed: `4000`
+  - exposed: `4000 (dev only)`, `8000 (proxied)`
   - internal: `4000`
 
 Event Service Docs (Redoc):
-➡ http://localhost:4000/docs
+➡ http://localhost:8000/v1/events/docs
 
 Event Service Docs (Swagger):
-➡ http://localhost:4000/docs-swagger
+➡ http://localhost:8000/v1/events/docs-swagger
 
 Event Service Docs (OpenAPI json):
-➡ http://localhost:4000/docs-raw
+➡ http://localhost:8000/v1/events/docs-raw
 
 ### **2. Chats Service**
 
 - Node.js backend processing chat data
 - Port:
-  - exposed: `4001`
+  - exposed: `4001 (dev only)`, `8000 (proxied)`
   - internal: `4000`
 
 Chat Service Docs (Redoc):
-➡ http://localhost:4001/docs
+➡ http://localhost:8000/v1/chats/docs
 
 Chat Service Docs (Swagger):
-➡ http://localhost:4001/docs-swagger
+➡ http://localhost:8000/v1/chats/docs-swagger
 
 Chat Service Docs (OpenAPI json):
-➡ http://localhost:4001/docs-raw
+➡ http://localhost:8000/v1/chats/docs-raw
 
-### **3. PostgreSQL + PostGIS**
+### **3. Auth Service**
 
-- Database for the Events Service
-- Port: `5672`
+- Python backend providing auth
+
+Auth Service Docs (Swagger):
+➡ http://localhost:8000/auth/docs
+
+### **4. API Gateway**
+
+- Nginx reverse proxy with JWT validation
 - Port:
-  - exposed: `5672`, `5673`
-  - internal: `5672`, `5672`
+  - exposed: `8000`
+  - internal: `80`
 
-### **4. RabbitMQ**
+### **5. PostgreSQL + PostGIS**
+
+- Database for the Events, Chats, Auth Service
+- Port: `5672`
+
+### **6. RabbitMQ**
 
 - RabbitMQ Broker
 - Ports:
-  - `5672` — AMQP
   - `15672` — Management UI
 
 RabbitMQ Management:
 ➡ http://localhost:15672
 
-### **5. pgAdmin 4**
+### **7. pgAdmin 4**
 
 - Web UI for PostgreSQL
 - Port: `5431`
@@ -160,6 +172,9 @@ docker compose logs -f events-service
 docker compose logs -f events-postgres
 docker compose logs -f chats-service
 docker compose logs -f chats-postgres
+docker compose logs -f auth-service
+docker compose logs -f auth-postgres
+docker compose logs -f auth-gateway
 docker compose logs -f rabbitmq-service
 docker compose logs -f pgadmin
 ```
