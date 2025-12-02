@@ -19,27 +19,65 @@
     }
   ],
   "queues": [
-    { "name": "events", "vhost": "/", "durable": true },
-    { "name": "chat_messages", "vhost": "/", "durable": true }
+    { "name": "events", "vhost": "/", "durable": true,
+    "arguments": {
+        "x-dead-letter-exchange": "events_dlx"
+      }
+    },
+    {
+      "name": "events_dlq",
+      "vhost": "/",
+      "durable": true
+    },
+    { "name": "chats", "vhost": "/", "durable": true,
+    "arguments": {
+        "x-dead-letter-exchange": "chats_dlx"
+      }
+    },
+    {
+      "name": "chats_dlq",
+      "vhost": "/",
+      "durable": true
+    },
+    { "name": "expire", "vhost": "/", "durable": true,
+      "arguments": {
+        "x-dead-letter-exchange": "expire_dlx"
+      }
+    },
+    { "name": "expire_dlq", "vhost": "/", "durable": true }
   ],
   "exchanges": [
-    { "name": "events_exchange", "vhost": "/", "type": "direct", "durable": true },
-    { "name": "chat_exchange", "vhost": "/", "type": "direct", "durable": true }
+    { "name": "events_exchange", "vhost": "/", "type": "direct", "durable": true,
+    "auto_delete": false },
+    { "name": "chats_exchange", "vhost": "/", "type": "direct", "durable": true,
+    "auto_delete": false },
+    { "name": "expire_exchange", "vhost": "/", "type": "direct", "durable": true,
+    "auto_delete": false },
+    { "name": "events_dlx", "vhost": "/", "type": "fanout", "durable": true },
+    { "name": "chats_dlx", "vhost": "/",  "type": "fanout", "durable": true },
+    { "name": "expire_dlx", "vhost": "/", "type": "fanout", "durable": true }
   ],
   "bindings": [
     {
-      "source": "events_exchange",
-      "vhost": "/",
-      "destination": "events",
+      "source": "events_dlx",
+      "destination": "events_dlq",
       "destination_type": "queue",
-      "routing_key": "events"
+      "routing_key": "",
+      "vhost": "/"
     },
     {
-      "source": "chat_exchange",
-      "vhost": "/",
-      "destination": "chat_messages",
+      "source": "chats_dlx",
+      "destination": "chats_dlq",
       "destination_type": "queue",
-      "routing_key": "chat"
+      "routing_key": "",
+      "vhost": "/"
+    },
+    {
+      "source": "expire_dlx",
+      "destination": "expire_dlq",
+      "destination_type": "queue",
+      "routing_key": "",
+      "vhost": "/"
     }
   ]
 }
