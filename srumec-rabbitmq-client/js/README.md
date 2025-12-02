@@ -2,23 +2,19 @@
 
 A lightweight, resilient RabbitMQ client for Node.js with:
 
-- automatic reconnect  
-- full topology recovery (exchanges, queues, bindings, consumers)  
-- offline message buffering  
-- publisher confirms  
-- built-in RPC request/response  
-- simple and friendly API  
+- automatic reconnect
+- full topology recovery (exchanges, queues, bindings, consumers)
+- offline message buffering
+- publisher confirms
+- built-in RPC request/response
+- simple and friendly API
 
 ---
 
 ## 📦 Installation
 
 ```bash
-npm install jirka124/shrumec-rabbitmq-client#main
-```
-
-```bash
-npm install https://github.com/jirka124/shrumec-rabbitmq-client.git
+npm install @srumec/rabbitmq-client
 ```
 
 Import:
@@ -52,10 +48,10 @@ await rabbit.connect();
 
 ### Parameters
 
-| Name       | Type     | Description |
-|------------|----------|-------------|
-| `retries`  | number   | Max reconnect attempts (default 20) |
-| `options`  | object   | Internal use (`isFirstTimeInit`) |
+| Name      | Type   | Description                         |
+| --------- | ------ | ----------------------------------- |
+| `retries` | number | Max reconnect attempts (default 20) |
+| `options` | object | Internal use (`isFirstTimeInit`)    |
 
 ### Description
 
@@ -71,11 +67,11 @@ await rabbit.assertExchange("my-exchange", "topic");
 
 ### Parameters
 
-| Name        | Type    | Description |
-|-------------|---------|-------------|
-| `exchange`  | string  | Exchange name |
-| `type`      | string  | Exchange type (default: `"topic"`) |
-| `options`   | object  | AMQP exchange options (default: `{ durable: true }`) |
+| Name       | Type   | Description                                          |
+| ---------- | ------ | ---------------------------------------------------- |
+| `exchange` | string | Exchange name                                        |
+| `type`     | string | Exchange type (default: `"topic"`)                   |
+| `options`  | object | AMQP exchange options (default: `{ durable: true }`) |
 
 ### Description
 
@@ -91,10 +87,10 @@ await rabbit.assertQueue("queue", { durable: true });
 
 ### Parameters
 
-| Name      | Type    | Description |
-|-----------|---------|-------------|
-| `queue`   | string  | Queue name |
-| `options` | object  | Queue options (`durable: true` recommended) |
+| Name      | Type   | Description                                 |
+| --------- | ------ | ------------------------------------------- |
+| `queue`   | string | Queue name                                  |
+| `options` | object | Queue options (`durable: true` recommended) |
 
 ### Description
 
@@ -110,11 +106,11 @@ await rabbit.bindQueue("queue", "exchange", "routing.key");
 
 ### Parameters
 
-| Name        | Type    | Description |
-|-------------|---------|-------------|
-| `queue`     | string  | Queue to bind |
-| `exchange`  | string  | Exchange name |
-| `routingKey`| string  | Binding routing key |
+| Name         | Type   | Description         |
+| ------------ | ------ | ------------------- |
+| `queue`      | string | Queue to bind       |
+| `exchange`   | string | Exchange name       |
+| `routingKey` | string | Binding routing key |
 
 ### Description
 
@@ -130,10 +126,10 @@ await rabbit.consume("queue", async (msg, ctx) => {});
 
 ### Parameters
 
-| Name        | Type       | Description |
-|-------------|------------|-------------|
-| `queue`     | string     | Queue to consume |
-| `handler`   | function   | `(msg, ctx, queueName)` message handler |
+| Name      | Type     | Description                             |
+| --------- | -------- | --------------------------------------- |
+| `queue`   | string   | Queue to consume                        |
+| `handler` | function | `(msg, ctx, queueName)` message handler |
 
 ### Description
 
@@ -150,13 +146,13 @@ await rabbit.publish("exchange", "key", { hello: "world" });
 
 ### Parameters
 
-| Name          | Type            | Description |
-|---------------|-----------------|-------------|
-| `exchange`    | string          | Target exchange |
-| `routingKey`  | string          | Routing key |
-| `message`     | object          | JSON payload |
-| `options`     | object          | AMQP publish options (`persistent: true` default) |
-| `timeout`     | number / null   | Publish confirm timeout |
+| Name         | Type          | Description                                       |
+| ------------ | ------------- | ------------------------------------------------- |
+| `exchange`   | string        | Target exchange                                   |
+| `routingKey` | string        | Routing key                                       |
+| `message`    | object        | JSON payload                                      |
+| `options`    | object        | AMQP publish options (`persistent: true` default) |
+| `timeout`    | number / null | Publish confirm timeout                           |
 
 ### Description
 
@@ -173,14 +169,14 @@ const res = await rabbit.publishRPC("exchange", "rpc.key", payload);
 
 ### Parameters
 
-| Name             | Type          | Description |
-|------------------|---------------|-------------|
-| `exchange`        | string        | Target exchange |
-| `routingKey`      | string        | Routing key |
-| `message`         | object        | JSON payload |
-| `options`         | object        | Additional publish options |
-| `publishTimeout`  | number / null | Timeout for publish confirm |
-| `rpcTimeout`      | number        | Timeout waiting for RPC response |
+| Name             | Type          | Description                      |
+| ---------------- | ------------- | -------------------------------- |
+| `exchange`       | string        | Target exchange                  |
+| `routingKey`     | string        | Routing key                      |
+| `message`        | object        | JSON payload                     |
+| `options`        | object        | Additional publish options       |
+| `publishTimeout` | number / null | Timeout for publish confirm      |
+| `rpcTimeout`     | number        | Timeout waiting for RPC response |
 
 ### Description
 
@@ -197,12 +193,12 @@ await rabbit.answerRPC(ctx, { result: 123 });
 
 ### Parameters
 
-| Name        | Type   | Description |
-|-------------|--------|-------------|
-| `ctx`       | object | AMQP message containing `replyTo` + `correlationId` |
-| `data`      | object | RPC response payload |
-| `options`   | object | Publish options |
-| `timeout`   | number / null | Publish confirm timeout |
+| Name      | Type          | Description                                         |
+| --------- | ------------- | --------------------------------------------------- |
+| `ctx`     | object        | AMQP message containing `replyTo` + `correlationId` |
+| `data`    | object        | RPC response payload                                |
+| `options` | object        | Publish options                                     |
+| `timeout` | number / null | Publish confirm timeout                             |
 
 ### Description
 
@@ -219,9 +215,9 @@ await rabbit.waitFor("connected");
 
 ### Parameters
 
-| Name     | Type     | Description |
-|----------|----------|-------------|
-| `event`  | string   | Event name emitted by RabbitClient |
+| Name    | Type   | Description                        |
+| ------- | ------ | ---------------------------------- |
+| `event` | string | Event name emitted by RabbitClient |
 
 ### Description
 
@@ -233,12 +229,12 @@ Returns a promise that resolves when the event is next emitted.
 
 On reconnect, the client automatically restores:
 
-- exchanges  
-- queues  
-- bindings  
-- consumers  
-- reply queue  
-- and flushes offline messages  
+- exchanges
+- queues
+- bindings
+- consumers
+- reply queue
+- and flushes offline messages
 
 Available events:
 
@@ -253,8 +249,8 @@ offline-queue-flushed
 
 ## 🧠 Best Practices
 
-- use `durable: true` for all main queues  
-- don’t manually recreate consumers after reconnect  
+- use `durable: true` for all main queues
+- don’t manually recreate consumers after reconnect
 
 ---
 

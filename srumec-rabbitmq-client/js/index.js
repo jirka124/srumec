@@ -358,7 +358,7 @@ export class RabbitClient extends EventEmitter {
           this.recvChannel.ack(msg);
         } catch (err) {
           console.error("Message handler error:", err);
-          this.recvChannel.nack(msg, false, true);
+          this.recvChannel.nack(msg, false, false);
         }
       },
       { noAck: false }
