@@ -1,0 +1,23 @@
+{
+  "name": "srumec-expire-service",
+  "version": "0.0.1",
+  "description": "Expire service for Šrumec (MOIS) using Redis TTL and RabbitMQ",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "pm2-dev ecosystem.config.cjs",
+    "start": "pm2-runtime ecosystem.config.cjs"
+  },
+  "imports": {
+    "#root/*": "./src/*",
+    "#services/*": "./src/services/*",
+    "#controllers/*": "./src/controllers/*",
+    "#messages/*": "./src/messages/*",
+    "#listeners/*": "./src/listeners/*",
+    "#lib/*": "./src/lib/*"
+  },
+  "dependencies": {
+    "@srumec/rabbitmq-client": "^0.0.9",
+    "redis": "^4.6.13"
+  }
+}
