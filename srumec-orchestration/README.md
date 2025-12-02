@@ -14,6 +14,7 @@ The stack includes the following services:
 - **Events Service** — Node.js backend processing event data
 - **Chats Service** — Node.js backend processing chats data
 - **Auth Service** — Python backend providing functions of AUTH and JWT generation/validation
+- **Expire Service** — Node.js backend notifying about events expiration
 - **API Gateway** — Nginx reverse proxy serving as API gateway into cluster
 - **3x PostgreSQL + 1x PostGIS** — database for the Events and Chats Service
 - **RabbitMQ** — message broker
@@ -82,19 +83,23 @@ Chat Service Docs (OpenAPI json):
 Auth Service Docs (Swagger):
 ➡ http://localhost:8000/auth/docs
 
-### **4. API Gateway**
+### **4. Expire Service**
+
+- Node.js backend notifying about events expiration
+
+### **5. API Gateway**
 
 - Nginx reverse proxy with JWT validation
 - Port:
   - exposed: `8000`
   - internal: `80`
 
-### **5. PostgreSQL + PostGIS**
+### **6. PostgreSQL + PostGIS**
 
 - Database for the Events, Chats, Auth Service
 - Port: `5672`
 
-### **6. RabbitMQ**
+### **7. RabbitMQ**
 
 - RabbitMQ Broker
 - Ports:
@@ -103,7 +108,7 @@ Auth Service Docs (Swagger):
 RabbitMQ Management:
 ➡ http://localhost:15672
 
-### **7. pgAdmin 4**
+### **8. pgAdmin 4**
 
 - Web UI for PostgreSQL
 - Port: `5431`
@@ -114,6 +119,9 @@ RabbitMQ Management:
   ```
   pgAdmin 4 UI:
   ➡ http://localhost:5431
+
+RabbitMQ Management:
+➡ http://localhost:15672
 
 ---
 
@@ -172,6 +180,7 @@ docker compose logs -f events-service
 docker compose logs -f events-postgres
 docker compose logs -f chats-service
 docker compose logs -f chats-postgres
+docker compose logs -f expire-service
 docker compose logs -f auth-service
 docker compose logs -f auth-postgres
 docker compose logs -f auth-gateway

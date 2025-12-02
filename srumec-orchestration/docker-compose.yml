@@ -96,8 +96,27 @@ services:
     depends_on:
       - auth-service
 
+  expire-redis:
+    image: redis:7-alpine
+    container_name: expire-redis
+    command: ["redis-server", "--notify-keyspace-events", "Ex"]
+    volumes:
+      - expire-redis-data:/data
+
+  expire-service:
+    build:
+      context: ../srumec-expire-service
+      dockerfile: Dockerfile
+    container_name: expire-service
+    env_file:
+      - ../srumec-expire-service/.env
+    depends_on:
+      - rabbitmq-service
+      - expire-redis
+
 volumes:
   events_pg_data:
   chats_pg_data:
   auth_pg_data:
+  expire-redis-data:
 

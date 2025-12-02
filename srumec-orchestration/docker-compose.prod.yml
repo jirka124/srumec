@@ -25,6 +25,17 @@ services:
     networks:
       - shrumec-net
 
+  expire-service:
+    build:
+      context: ../srumec-expire-service
+      dockerfile: Dockerfile
+      target: prod
+    command: npm run start
+    env_file:
+      - ../srumec-expire-service/.env.prod
+    networks:
+    - shrumec-net
+
   chats-postgres:
     networks:
       - shrumec-net
@@ -37,6 +48,21 @@ services:
     networks:
       - shrumec-net
 
+  auth-service:
+    networks:
+      - shrumec-net
+
+  auth-postgres:
+    networks:
+      - shrumec-net
+
+  auth-gateway:
+    networks:
+      - shrumec-net
+
+  expire-redis:
+    networks:
+      - shrumec-net
 
 networks:
   shrumec-net:
