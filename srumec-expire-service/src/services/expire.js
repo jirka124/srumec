@@ -32,6 +32,42 @@ export const expireService = {
     });
   },
 
+  async updateExpiration(eventObj) {
+    const id = eventObj.id;
+
+    const expireTs = new Date(eventObj.happen_time).getTime();
+    const nowTs = Date.now();
+
+    const ttlSeconds = Math.floor((expireTs - nowTs) / 1000);
+
+    if (ttlSeconds <= 0) {
+      logger.warn(`Updated event ${id} is already expired`);
+      await this.cancelExpiration(id);
+      return await this.handleExpiration(id);
+    }
+
+    logger.info(`Updated expiration for event ${id} (TTL: ${ttlSeconds}s)`);
+
+    const expKey = `exp:${id}`;
+    const dataKey = `exp_data:${id}`;
+
+    // store new full object
+    await redis.set(dataKey, JSON.stringify(eventObj));
+
+    // refresh TTL
+    await redis.set(expKey, "", { EX: ttlSeconds });
+  },
+
+  async cancelExpiration(id) {
+    const expKey = `exp:${id}`;
+    const dataKey = `exp_data:${id}`;
+
+    logger.info(`Canceling expiration for event ${id}`);
+
+    await redis.del(expKey);
+    await redis.del(dataKey);
+  },
+
   async handleExpiration(id) {
     const dataKey = `exp_data:${id}`;
 

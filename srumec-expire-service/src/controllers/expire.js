@@ -17,6 +17,30 @@ export const expireController = {
     }
   },
 
+  async onEventUpdated(msg) {
+    try {
+      const ev = msg.event;
+
+      if (!ev.happen_time || !ev.id)
+        throw produceFail("UzGfZGFazysY5Dnw", "happen_time or id missing");
+
+      await expireService.updateExpiration(ev);
+    } catch (e) {
+      throw produceFail("YrfnXxbW36DyF2xJ", e);
+    }
+  },
+
+  async onEventDeleted(msg) {
+    try {
+      const { id } = msg;
+      if (!id) throw produceFail("GYnmf5FXB1rZpmsU", "id missing");
+
+      await expireService.cancelExpiration(id);
+    } catch (e) {
+      throw produceFail("nK7GwtPs8Mwi8yyp", e);
+    }
+  },
+
   async onKeyExpired(expiredKey) {
     try {
       const id = expiredKey.slice(4);

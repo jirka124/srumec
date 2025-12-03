@@ -69,6 +69,26 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  UzGfZGFazysY5Dnw: {
+    message: "Failed to update event expiration",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  YrfnXxbW36DyF2xJ: {
+    message: "Failed to update event expiration",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  GYnmf5FXB1rZpmsU: {
+    message: "Failed to cancel event expiration",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  nK7GwtPs8Mwi8yyp: {
+    message: "Failed to cancel event expiration",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
 };
 
 export const isFail = (fail) => {
