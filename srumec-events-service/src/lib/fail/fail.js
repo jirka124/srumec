@@ -121,6 +121,11 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  AIhVz4L5GzpbzL4J: {
+    message: "Failed to delete expired event",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
 };
 
 export const isFail = (fail) => {

@@ -1,6 +1,12 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
 import { logger } from "#lib/log/log.js";
+import {
+  publishEventCreated,
+  publishEventUpdated,
+  publishEventDeleted,
+} from "#messaging/publisher.js";
+import {} from "#messaging/publisher.js";
 
 export const eventService = {
   async getNearbyEvents({ latitude, longitude, radius_m }) {
@@ -108,6 +114,8 @@ export const eventService = {
       ST_X(location::geometry) AS longitude;
   `);
 
+    await publishEventCreated(result[0]);
+
     logger.info('Executed "createEvent" service with params: ', data);
 
     return result[0];
@@ -157,9 +165,12 @@ export const eventService = {
       ST_X(location::geometry) AS longitude;
   `);
 
+    const event = result[0] ?? null;
+    if (event !== null) await publishEventUpdated(event);
+
     logger.info('Executed "updateEvent" service with params: ', data);
 
-    return result[0] ?? null;
+    return event;
   },
 
   async deleteEvent({ id }) {
@@ -170,6 +181,8 @@ export const eventService = {
     WHERE id = ${id}
     RETURNING id;
   `);
+
+    if (result.length) await publishEventDeleted(id);
 
     logger.info('Executed "deleteEvent" service with params: ', { id });
 

@@ -1,6 +1,6 @@
 {
   "name": "events-service",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "homepage": "https://github.com/jirka124/srumec-events-service#readme",
   "bugs": {
@@ -25,12 +25,14 @@
     "#models/*": "./src/models/*",
     "#services/*": "./src/services/*",
     "#controllers/*": "./src/controllers/*",
+    "#messaging/*": "./src/messaging/*",
     "#routes/*": "./src/routes/*",
     "#lib/*": "./src/lib/*",
     "#middleware/*": "./src/middleware/*",
     "#validators/*": "./src/validators/*"
   },
   "dependencies": {
+    "@srumec/rabbitmq-client": "^0.0.9",
     "drizzle-kit": "^0.31.7",
     "drizzle-orm": "^0.44.7",
     "express": "^4.18.2",
