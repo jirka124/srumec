@@ -13,6 +13,26 @@ export const eventController = {
     }
   },
 
+  async getUserEvents(req, res) {
+    try {
+      const userId = req.user.id;
+
+      const list = await eventService.getUserEvents({ userId });
+      res.json(list);
+    } catch (e) {
+      throw produceFail("C0LoEpU54HpKrcSk", e);
+    }
+  },
+
+  async getPending(req, res) {
+    try {
+      const list = await eventService.getPendingEvents();
+      res.json(list);
+    } catch (e) {
+      throw produceFail("oXC3mOcio5KQMt2M", e);
+    }
+  },
+
   async getOne(req, res) {
     try {
       const data = req.validated;

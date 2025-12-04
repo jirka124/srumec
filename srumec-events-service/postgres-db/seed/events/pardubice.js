@@ -7,6 +7,7 @@ export const pardubiceEvents = [
     dayOffset: 1,
     hourOffset: 17,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Kulturní Festival",
@@ -16,5 +17,6 @@ export const pardubiceEvents = [
     dayOffset: 3,
     hourOffset: 13,
     minuteOffset: 30,
+    status: "approved",
   },
 ];

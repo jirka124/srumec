@@ -56,6 +56,21 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 400,
   },
+  Wv8o7lWyrWhnV6Ka: {
+    message: "Authentication failed",
+    logLevel: LOG_LEVELS.INFO,
+    code: 401,
+  },
+  fIhz89IJJEKE44CU: {
+    message: "Authentication failed",
+    logLevel: LOG_LEVELS.INFO,
+    code: 401,
+  },
+  MoC7EZHdBULE1Kq7: {
+    message: "Authentication failed",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
   rL1h3Y7SJ11lL0Y2: {
     message: "UNHANDLED_ERROR",
     logLevel: LOG_LEVELS.ERROR,
@@ -63,6 +78,16 @@ export const fails = {
   },
   "1TgWGUTBV3UTogTc": {
     message: "Failed to get nearby events",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  C0LoEpU54HpKrcSk: {
+    message: "Failed to get event by id",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  oXC3mOcio5KQMt2M: {
+    message: "Failed to get event by id",
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },

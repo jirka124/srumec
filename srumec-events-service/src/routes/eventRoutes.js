@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { eventController } from "#controllers/eventController.js";
 import { validate } from "#middleware/validate.js";
+import { authUser } from "#middleware/auth-user.js";
 import {
   GetNearbyReqSchema,
   GetOneReqSchema,
@@ -11,11 +12,15 @@ import {
 
 const router = Router();
 
+router.use(authUser);
+
 router.post(
   "/get-nearby",
   validate(GetNearbyReqSchema),
   eventController.getNearby
 );
+router.post("/get-my-events", eventController.getUserEvents);
+router.post("/get-pending", eventController.getPending);
 router.post("/get-one", validate(GetOneReqSchema), eventController.getOne);
 router.post(
   "/create-one",

@@ -7,6 +7,7 @@ export const brnoEvents = [
     dayOffset: 5,
     hourOffset: 18,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Brno – Beer & Code",
@@ -16,5 +17,6 @@ export const brnoEvents = [
     dayOffset: 3,
     hourOffset: 20,
     minuteOffset: 15,
+    status: "approved",
   },
 ];

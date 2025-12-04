@@ -13,7 +13,8 @@ export default async function seedEvents(sql) {
         title,
         description,
         location,
-        happen_time
+        happen_time,
+        status
       )
       VALUES (
         ${organizerId},
@@ -24,7 +25,8 @@ export default async function seedEvents(sql) {
           days  => ${ev.dayOffset},
           hours => ${ev.hourOffset},
           mins  => ${ev.minuteOffset}
-        )
+        ),
+        ${ev.status}
       )
       ON CONFLICT DO NOTHING
     `;

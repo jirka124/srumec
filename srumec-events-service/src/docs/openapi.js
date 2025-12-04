@@ -20,6 +20,7 @@ import {
 const defaultResponse = (code) => {
   let description = null;
   if (code === 400) description = "Invalid request";
+  else if (code === 401) description = "Unauthorized";
   else if (code === 404) description = "Not Found";
   else if (code === 500) description = "Internal Server Error";
   else throw new Error("Unknown response code");
@@ -79,6 +80,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -107,6 +109,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -134,6 +137,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -161,6 +165,46 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
+            ...defaultResponse(500),
+          },
+        },
+      },
+
+      "/v1/events/my-events": {
+        post: {
+          summary: "Get all events created by the authenticated user",
+          description:
+            "Returns all events created by the user based on JWT identity. Does not require request body.",
+          responses: {
+            200: {
+              description: "List of user's own events",
+              content: {
+                "application/json": {
+                  schema: z.array(EventSchema),
+                },
+              },
+            },
+            ...defaultResponse(401),
+            ...defaultResponse(500),
+          },
+        },
+      },
+
+      "/v1/events/pending": {
+        post: {
+          summary: "Get all pending events",
+          description: "Returns all events whose status is 'pending'.",
+          responses: {
+            200: {
+              description: "List of pending events",
+              content: {
+                "application/json": {
+                  schema: z.array(EventSchema),
+                },
+              },
+            },
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -187,6 +231,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -214,6 +259,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -240,6 +286,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -266,6 +313,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -293,6 +341,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },

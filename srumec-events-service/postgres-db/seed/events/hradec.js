@@ -7,6 +7,7 @@ export const hradecEvents = [
     dayOffset: 2,
     hourOffset: 18,
     minuteOffset: 30,
+    status: "pending",
   },
   {
     title: "Outdoor Workout",
@@ -16,6 +17,7 @@ export const hradecEvents = [
     dayOffset: 4,
     hourOffset: 9,
     minuteOffset: 0,
+    status: "rejected",
   },
   {
     title: "Salsa Night",
@@ -25,6 +27,7 @@ export const hradecEvents = [
     dayOffset: 6,
     hourOffset: 20,
     minuteOffset: 15,
+    status: "approved",
   },
   {
     title: "Board Games Evening",
@@ -34,6 +37,7 @@ export const hradecEvents = [
     dayOffset: 1,
     hourOffset: 17,
     minuteOffset: 45,
+    status: "approved",
   },
   {
     title: "Karaoke Night",
@@ -43,6 +47,7 @@ export const hradecEvents = [
     dayOffset: 5,
     hourOffset: 21,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Coffee & Code",
@@ -52,6 +57,7 @@ export const hradecEvents = [
     dayOffset: 3,
     hourOffset: 10,
     minuteOffset: 15,
+    status: "approved",
   },
   {
     title: "Running Club Meetup",
@@ -61,6 +67,7 @@ export const hradecEvents = [
     dayOffset: 2,
     hourOffset: 7,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Photography Walk",
@@ -70,6 +77,7 @@ export const hradecEvents = [
     dayOffset: 7,
     hourOffset: 16,
     minuteOffset: 20,
+    status: "approved",
   },
   {
     title: "Open Mic Standup",
@@ -79,6 +87,7 @@ export const hradecEvents = [
     dayOffset: 6,
     hourOffset: 19,
     minuteOffset: 30,
+    status: "approved",
   },
   {
     title: "Plant Swap Meetup",
@@ -88,6 +97,7 @@ export const hradecEvents = [
     dayOffset: 4,
     hourOffset: 14,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Chess in the Park",
@@ -97,6 +107,7 @@ export const hradecEvents = [
     dayOffset: 1,
     hourOffset: 15,
     minuteOffset: 30,
+    status: "approved",
   },
   {
     title: "VR Gaming Session",
@@ -106,6 +117,7 @@ export const hradecEvents = [
     dayOffset: 5,
     hourOffset: 18,
     minuteOffset: 10,
+    status: "approved",
   },
   {
     title: "Outdoor Movie Night",
@@ -115,6 +127,7 @@ export const hradecEvents = [
     dayOffset: 7,
     hourOffset: 20,
     minuteOffset: 45,
+    status: "approved",
   },
   {
     title: "Bouldering Session",
@@ -124,6 +137,7 @@ export const hradecEvents = [
     dayOffset: 3,
     hourOffset: 18,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Yoga by the River",
@@ -133,6 +147,7 @@ export const hradecEvents = [
     dayOffset: 2,
     hourOffset: 8,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "D&D Adventure Night",
@@ -142,6 +157,7 @@ export const hradecEvents = [
     dayOffset: 5,
     hourOffset: 17,
     minuteOffset: 30,
+    status: "approved",
   },
   {
     title: "Live Jazz Evening",
@@ -151,6 +167,7 @@ export const hradecEvents = [
     dayOffset: 6,
     hourOffset: 20,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Dog Owners Meetup",
@@ -160,6 +177,7 @@ export const hradecEvents = [
     dayOffset: 3,
     hourOffset: 11,
     minuteOffset: 30,
+    status: "approved",
   },
   {
     title: "Painting Session",
@@ -169,6 +187,7 @@ export const hradecEvents = [
     dayOffset: 1,
     hourOffset: 16,
     minuteOffset: 45,
+    status: "approved",
   },
   {
     title: "Coding Interview Practice",
@@ -178,5 +197,6 @@ export const hradecEvents = [
     dayOffset: 4,
     hourOffset: 18,
     minuteOffset: 0,
+    status: "approved",
   },
 ];

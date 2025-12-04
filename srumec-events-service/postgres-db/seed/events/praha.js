@@ -7,6 +7,7 @@ export const prahaEvents = [
     dayOffset: 4,
     hourOffset: 19,
     minuteOffset: 0,
+    status: "approved",
   },
   {
     title: "Letná Picnic Meetup",
@@ -16,6 +17,7 @@ export const prahaEvents = [
     dayOffset: 2,
     hourOffset: 16,
     minuteOffset: 45,
+    status: "approved",
   },
   {
     title: "Vinohrady Photo Walk",
@@ -25,5 +27,6 @@ export const prahaEvents = [
     dayOffset: 1,
     hourOffset: 18,
     minuteOffset: 15,
+    status: "approved",
   },
 ];

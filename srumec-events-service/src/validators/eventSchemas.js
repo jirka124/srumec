@@ -31,6 +31,10 @@ export const fields = {
     description: "When will the event happen ISO datetime string",
     example: "2025-11-22T21:28:46.533Z",
   }),
+  status: z.enum(["pending", "approved", "rejected"]).meta({
+    description: "Event approval status",
+    example: "approved",
+  }),
 };
 
 export const EventSchema = z
@@ -42,6 +46,7 @@ export const EventSchema = z
     latitude: fields.latitude,
     longitude: fields.longitude,
     happen_time: fields.happen_time,
+    status: fields.status,
   })
   .meta({
     id: "EventSchema",
@@ -56,7 +61,7 @@ export const GetNearbyReqSchema = z
   })
   .meta({
     id: "GetNearby",
-    description: "Get events near a given point",
+    description: "Get approved events near a given point",
   });
 
 export const GetOneReqSchema = z
@@ -86,6 +91,7 @@ export const EventCreateReqSchema = z.object({
       message: "happen_time must be at least 5 minutes in the future",
     }
   ),
+  status: fields.status.optional().default("pending"),
 });
 
 export const EventUpdateReqSchema = z.object({
@@ -106,6 +112,7 @@ export const EventUpdateReqSchema = z.object({
       message: "happen_time must be at least 5 minutes in the future",
     }
   ),
+  status: fields.status.optional(),
 });
 
 export const DeleteOneReqSchema = z

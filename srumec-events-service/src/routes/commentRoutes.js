@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { commentController } from "#controllers/commentController.js";
 import { validate } from "#middleware/validate.js";
+import { authUser } from "#middleware/auth-user.js";
 import {
   CommentGetAllReqSchema,
   CommentCreateReqSchema,
@@ -9,6 +10,8 @@ import {
 } from "#validators/commentSchemas.js";
 
 const router = Router();
+
+router.use(authUser);
 
 router.post(
   "/get-all",

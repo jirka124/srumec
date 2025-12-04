@@ -7,5 +7,6 @@ export const liberecEvents = [
     dayOffset: 7,
     hourOffset: 9,
     minuteOffset: 30,
+    status: "approved",
   },
 ];

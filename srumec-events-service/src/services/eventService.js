@@ -24,13 +24,15 @@ export const eventService = {
       description,
       to_iso(happen_time) AS happen_time,
       ST_Y(location::geometry) AS latitude,
-      ST_X(location::geometry) AS longitude
+      ST_X(location::geometry) AS longitude,
+      status
     FROM events
-    WHERE ST_DWithin(
-      location,
-      ST_MakePoint(${longitude}, ${latitude})::geography,
-      ${radius_m}
-    );
+    WHERE status = 'approved'
+      AND ST_DWithin(
+        location,
+        ST_MakePoint(${longitude}, ${latitude})::geography,
+        ${radius_m}
+      );
   `);
 
     logger.info('Executed "getNearbyEvents" service with params: ', {
@@ -38,6 +40,52 @@ export const eventService = {
       longitude,
       radius_m,
     });
+
+    return rows;
+  },
+
+  async getUserEvents({ userId }) {
+    logger.info('Executing "getUserEvents" service with params: ', { userId });
+
+    const rows = await db.execute(sql`
+    SELECT
+      id,
+      organizer_ref,
+      title,
+      description,
+      to_iso(happen_time) AS happen_time,
+      ST_Y(location::geometry) AS latitude,
+      ST_X(location::geometry) AS longitude,
+      status
+    FROM events
+    WHERE organizer_ref = ${userId}
+    ORDER BY happen_time ASC;
+  `);
+
+    logger.info('Executed "getUserEvents" service with params: ', { userId });
+
+    return rows;
+  },
+
+  async getPendingEvents() {
+    logger.info('Executing "getPendingEvents" service with params: ', {});
+
+    const rows = await db.execute(sql`
+    SELECT
+      id,
+      organizer_ref,
+      title,
+      description,
+      to_iso(happen_time) AS happen_time,
+      ST_Y(location::geometry) AS latitude,
+      ST_X(location::geometry) AS longitude,
+      status
+    FROM events
+    WHERE status = 'pending'
+    ORDER BY happen_time ASC;
+  `);
+
+    logger.info('Executed "getPendingEvents" service with params: ', {});
 
     return rows;
   },
@@ -55,7 +103,8 @@ export const eventService = {
       description,
       to_iso (happen_time) AS happen_time,
       ST_Y(location::geometry) AS latitude,
-      ST_X(location::geometry) AS longitude
+      ST_X(location::geometry) AS longitude,
+      status
     FROM events
     WHERE id = ${id};
   `);
@@ -98,6 +147,11 @@ export const eventService = {
     `);
     }
 
+    if (data.status !== undefined) {
+      columns.push("status");
+      values.push(data.status);
+    }
+
     const columnsSql = sql.raw(columns.map((c) => `"${c}"`).join(", "));
     const valuesSql = sql.join(values, sql`, `);
 
@@ -111,7 +165,8 @@ export const eventService = {
       description,
       to_iso (happen_time) AS happen_time,
       ST_Y(location::geometry) AS latitude,
-      ST_X(location::geometry) AS longitude;
+      ST_X(location::geometry) AS longitude,
+      status;
   `);
 
     await publishEventCreated(result[0]);
@@ -125,13 +180,16 @@ export const eventService = {
     logger.info('Executing "updateEvent" service with params: ', data);
 
     const updates = [];
+    let shouldResetStatus = false;
 
     if (data.title !== undefined) {
       updates.push(sql`title = ${data.title}`);
+      shouldResetStatus = true;
     }
 
     if (data.description !== undefined) {
       updates.push(sql`description = ${data.description}`);
+      shouldResetStatus = true;
     }
 
     if (data.happen_time !== undefined) {
@@ -145,6 +203,12 @@ export const eventService = {
         4326
       )::geography
     `);
+    }
+
+    if (data.status !== undefined) {
+      updates.push(sql`status = ${data.status}`);
+    } else if (shouldResetStatus) {
+      updates.push(sql`status = 'pending'`);
     }
 
     if (updates.length === 0) {
@@ -162,7 +226,8 @@ export const eventService = {
       description,
       to_iso (happen_time) AS happen_time,
       ST_Y(location::geometry) AS latitude,
-      ST_X(location::geometry) AS longitude;
+      ST_X(location::geometry) AS longitude,
+      status;
   `);
 
     const event = result[0] ?? null;

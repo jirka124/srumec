@@ -1,6 +1,8 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+CREATE TYPE event_approve_state_type AS ENUM ('pending', 'approved', 'rejected');
+
 -- EVENTS
 CREATE TABLE IF NOT EXISTS events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -8,7 +10,8 @@ CREATE TABLE IF NOT EXISTS events (
   title VARCHAR(32) NOT NULL,
   description VARCHAR(512) DEFAULT NULL,
   location GEOGRAPHY(Point, 4326) NOT NULL,
-  happen_time TIMESTAMPTZ NOT NULL
+  happen_time TIMESTAMPTZ NOT NULL,
+  status event_approve_state_type NOT NULL DEFAULT 'pending'
 );
 
 -- COMMENTS

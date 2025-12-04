@@ -23,10 +23,6 @@ app.get("/v1/events/", (req, res) => {
   res.send("Events service is running");
 });
 
-// REST API
-app.use("/v1/events", eventRoutes);
-app.use("/v1/comments", commentRoutes);
-
 app.get(
   "/v1/events/docs",
   redocExpress({
@@ -43,6 +39,10 @@ app.use(
 app.get("/v1/events/docs-raw", (req, res) => {
   res.json(openApiSpec);
 });
+
+// REST API
+app.use("/v1/events", eventRoutes);
+app.use("/v1/comments", commentRoutes);
 
 app.use(catchError);
 
