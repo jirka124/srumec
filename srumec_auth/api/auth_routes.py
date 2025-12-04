@@ -26,7 +26,7 @@ async def create_user(
     return auth_service.create_user(db=db, user=user)
 
 
-@router.post("/login", response_model=user_schema.Token)
+@router.post("/login", response_model=user_schema.LoginResponse)
 async def login_for_access_token(
         user_credentials: user_schema.UserLogin,
         db: Session = Depends(get_db)
@@ -42,8 +42,10 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = auth_service.create_access_token(
-        data={"sub": user.email}
-    )
+    token_payload = {
+        "id": str(user.id),  # Důležité: UUID musíte převést na string!
+        "role": user.role  # Přidání role (např. "admin" nebo "user")
+    }
+    access_token = auth_service.create_access_token(data=token_payload)
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user": user}

@@ -33,8 +33,9 @@ async def validate_token(request: Request):
     try:
         # Pouze ověříme platnost a expiraci
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        user_email = payload.get("sub")
-        if user_email is None:
+        user_id = payload.get("id")
+        user_role = payload.get("role", "user")
+        if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
 
     except JWTError:
@@ -42,8 +43,8 @@ async def validate_token(request: Request):
 
     # Pokud vše projde, vracíme 200 OK.
     from fastapi import Response
-    response = Response(status_code=200)
-    return response
+    return Response(status_code=200, headers={"X-User-Id": str(user_id),
+            "X-Role": str(user_role)})
 
 
 # Zahrneme tvůj existující router s login/register
