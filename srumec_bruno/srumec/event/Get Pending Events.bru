@@ -1,0 +1,20 @@
+meta {
+  name: Get Pending Events
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/v1/events/get-pending
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

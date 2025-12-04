@@ -1,0 +1,20 @@
+meta {
+  name: Get My Events
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/v1/events/get-my-events
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
