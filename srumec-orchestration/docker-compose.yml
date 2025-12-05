@@ -114,9 +114,69 @@ services:
       - rabbitmq-service
       - expire-redis
 
+  ws-service:
+    container_name: ws-service
+    build:
+      context: ../srumec-ws-service
+      dockerfile: Dockerfile
+    env_file:
+      - ../srumec-ws-service/.env
+
+  users-service:
+    container_name: users-service
+    image: rustapp:1.0.0
+    build:
+      context: ../srumec-users-service
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: postgres://postgres:postgres@users-postgres:5432/postgres
+    depends_on:
+      - users-postgres
+
+  users-postgres:
+    container_name: users-postgres
+    image: postgres:12
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - users_pg_data:/var/lib/postgresql/data
+  
+  admin-api:
+    build: ../srumec-admin-app
+    container_name: admin-api
+    depends_on:
+      admin-postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://admin-postgres:5432/admin
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+      
+  admin-postgres:
+    image: postgres:16
+    container_name: admin-postgres
+    environment:
+      POSTGRES_DB: admin
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - admin-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d admin"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+
 volumes:
   events_pg_data:
   chats_pg_data:
   auth_pg_data:
+  users_pg_data: {}
+  admin-pg-data:
   expire-redis-data:
 

@@ -39,6 +39,27 @@ services:
     env_file:
       - ../srumec-expire-service/.env.dev
 
+  ws-service:
+    container_name: ws-service
+    build:
+      context: ../srumec-ws-service
+      dockerfile: Dockerfile
+      target: dev
+    command: npm run dev
+    volumes:
+      - ../srumec-ws-service:/app
+      - /app/node_modules
+    env_file:
+      - ../srumec-ws-service/.env.dev
+
+  users-service:
+    ports:
+      - '4002:8080'
+
+  admin-api:
+    ports:
+      - "4003:8080"
+
   events-seeder:
     container_name: events-seeder
     build:

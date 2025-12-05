@@ -9,14 +9,17 @@ Its purpose is to run all related services in a unified environment for **develo
 
 ## 🚀 Overview
 
-The stack includes the following services:
+The stack includes the following:
 
 - **Events Service** — Node.js backend processing event data
 - **Chats Service** — Node.js backend processing chats data
 - **Auth Service** — Python backend providing functions of AUTH and JWT generation/validation
 - **Expire Service** — Node.js backend notifying about events expiration
+- **Users Service** — Rust backend processing user data
+- **WebSocket Service** — Node.js backend forwarding real-time updates
+- **Admin App** — Spring Boot moderation application allowing admin users to accept events and block users
 - **API Gateway** — Nginx reverse proxy serving as API gateway into cluster
-- **3x PostgreSQL + 1x PostGIS** — database for the Events and Chats Service
+- **5x PostgreSQL + 1x PostGIS** — databases for all data
 - **RabbitMQ** — message broker
 - **pgAdmin 4** — web UI for managing the PostgreSQL databases
 
@@ -79,6 +82,9 @@ Chat Service Docs (OpenAPI json):
 ### **3. Auth Service**
 
 - Python backend providing auth
+- Port:
+  - exposed: `8000 (proxied)`
+  - internal: `8000`
 
 Auth Service Docs (Swagger):
 ➡ http://localhost:8000/auth/docs
@@ -87,19 +93,37 @@ Auth Service Docs (Swagger):
 
 - Node.js backend notifying about events expiration
 
-### **5. API Gateway**
+### **5. Users Service**
+
+- Users Service — Rust backend processing user data
+- Port:
+  - exposed: `4002 (dev only)`, `8000 (proxied)`
+  - internal: `8080`
+
+### **6. WebSocket Service**
+
+- Node.js backend forwarding real-time updates
+
+### **7. API Gateway**
 
 - Nginx reverse proxy with JWT validation
 - Port:
   - exposed: `8000`
   - internal: `80`
 
-### **6. PostgreSQL + PostGIS**
+### **8. Admin App**
+
+- Spring Boot moderation application allowing admin users to accept events and block users
+- Port:
+  - exposed: `4003 (dev only)`, `8000 (proxied)`
+  - internal: `8080`
+
+### **9. PostgreSQL + PostGIS**
 
 - Database for the Events, Chats, Auth Service
 - Port: `5672`
 
-### **7. RabbitMQ**
+### **10. RabbitMQ**
 
 - RabbitMQ Broker
 - Ports:
@@ -108,7 +132,7 @@ Auth Service Docs (Swagger):
 RabbitMQ Management:
 ➡ http://localhost:15672
 
-### **8. pgAdmin 4**
+### **11. pgAdmin 4**
 
 - Web UI for PostgreSQL
 - Port: `5431`
@@ -119,9 +143,6 @@ RabbitMQ Management:
   ```
   pgAdmin 4 UI:
   ➡ http://localhost:5431
-
-RabbitMQ Management:
-➡ http://localhost:15672
 
 ---
 
@@ -183,6 +204,10 @@ docker compose logs -f chats-postgres
 docker compose logs -f expire-service
 docker compose logs -f auth-service
 docker compose logs -f auth-postgres
+docker compose logs -f users-service
+docker compose logs -f users-postgres
+docker compose logs -f admin-api
+docker compose logs -f admin-postgres
 docker compose logs -f auth-gateway
 docker compose logs -f rabbitmq-service
 docker compose logs -f pgadmin
