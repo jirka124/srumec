@@ -1,0 +1,38 @@
+{
+  "name": "ws-service",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/jirka124/srumec-ws-service#readme",
+  "bugs": {
+    "url": "https://github.com/jirka124/srumec-ws-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jirka124/srumec-ws-service.git"
+  },
+  "license": "MIT",
+  "author": "Jiří Žák",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "pm2-dev ecosystem.config.cjs",
+    "start": "pm2-runtime ecosystem.config.cjs"
+  },
+  "imports": {
+    "#root/*": "./src/*",
+    "#services/*": "./src/services/*",
+    "#messaging/*": "./src/messaging/*",
+    "#lib/*": "./src/lib/*",
+    "#ws/*": "./src/ws/*"
+  },
+  "dependencies": {
+    "@srumec/rabbitmq-client": "^0.0.9",
+    "amqplib": "^0.10.9",
+    "jsonwebtoken": "^9.0.2",
+    "ws": "^8.18.3"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.9"
+  }
+}
