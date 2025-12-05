@@ -25,11 +25,18 @@ cd srumec
 
 This project works as a **monorepo** that contains other services using **git subtree**:
 
-- `./srumec-orchestration`
-- `./srumec-events-service`
-- `./srumec-chats-service`
-- `./srumec-rabbitmq-client`
-- `./srumec-rabbitmq-service`
+| Path                        | Repository                                                  |
+| --------------------------- | ----------------------------------------------------------- |
+| `./srumec-orchestration`    | [Repo](https://github.com/jirka124/srumec-orchestration)    |
+| `./srumec-events-service`   | [Repo](https://github.com/jirka124/srumec-events-service)   |
+| `./srumec-chats-service`    | [Repo](https://github.com/jirka124/srumec-chats-service)    |
+| `./srumec-rabbitmq-client`  | [Repo](https://github.com/jirka124/srumec-rabbitmq-client)  |
+| `./srumec-rabbitmq-service` | [Repo](https://github.com/jirka124/srumec-rabbitmq-service) |
+| `./srumec_auth`             | [Repo](https://github.com/thevidko/srumec_auth)             |
+| `./srumec-admin-app`        | [Repo](https://github.com/xdmdxd/AdminAPISrumec)            |
+| `./srumec-expire-service`   | [Repo](https://github.com/jirka124/srumec-expire-service)   |
+| `./srumec-users-service`    | [Repo](https://github.com/shrrdz?tab=repositories)          |
+| `./srumec-ws-service`       | [Repo](https://github.com/jirka124/srumec-ws-service)       |
 
 ---
 
