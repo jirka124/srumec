@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_DB: admin
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d admin"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  admin-api:
+    build: .                  # tady v rootu projektu máš Dockerfile
+    container_name: admin-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/admin
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+    ports:
+      - "8080:8080"           # API bude dostupné na http://localhost:8080
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8080"           # Adminer v prohlížeči na http://localhost:8081
+
+volumes:
+  pg-data:

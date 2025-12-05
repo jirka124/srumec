@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Přihlášení – Správce</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="auth">
+<div class="auth-card">
+  <h1>Správce</h1>
+  <p class="muted">Přihlas se pro přístup do admin panelu.</p>
+
+  <!-- chybová hláška při ?error -->
+  <div id="error" class="alert" style="display:none;">Nesprávné jméno nebo heslo.</div>
+  <!-- info při ?logout -->
+  <div id="logout" class="note" style="display:none;">Byl jsi odhlášen.</div>
+
+  <!-- src/main/resources/static/login.html -->
+  <form method="post" action="/login" class="form">
+    <label>
+      <span>Uživatelské jméno</span>
+      <input type="text" name="username" required autofocus>
+    </label>
+    <label>
+      <span>Heslo</span>
+      <input type="password" name="password" required>
+    </label>
+    <button type="submit" class="btn">Přihlásit se</button>
+  </form>
+
+
+  <p class="muted small" style="margin-top:12px;">
+    Výchozí přihlašovací údaje lze změnit v <code>application.yml</code> (admin.username / admin.password).
+  </p>
+</div>
+
+<script>
+  // zobraz stav podle query paramů ?error / ?logout
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('error')) document.getElementById('error').style.display = 'block';
+  if (qs.has('logout')) document.getElementById('logout').style.display = 'block';
+</script>
+</body>
+</html>

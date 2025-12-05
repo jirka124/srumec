@@ -1,0 +1,60 @@
+
+Vkladani eventu pres CURL:
+
+
+# 1) login (vezme JSESSIONID do cookies.txt)
+curl -i -c cookies.txt -X POST http://localhost:8080/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data "username=admin&password=admin"
+
+
+# 2) Vkládání eventů (cookie = přihlášen)
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Grilling in park","popis":"Afternoon BBQ and music","lat":50.075,"lng":14.420,"userId":"00000000-0000-0000-0000-000000000001"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Running group meetup","popis":"Morning run in Stromovka","lat":50.100,"lng":14.440,"userId":"00000000-0000-0000-0000-000000000002"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Book exchange","popis":"Bring your books and swap","lat":49.200,"lng":16.600,"userId":"00000000-0000-0000-0000-000000000003"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Picnic with friends","popis":"Chilling near the lake with snacks","lat":50.050,"lng":14.500,"userId":"00000000-0000-0000-0000-000000000004"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Selling drugs in park","popis":"meet behind the old bridge","lat":50.085,"lng":14.410,"userId":"00000000-0000-0000-0000-000000000005"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Party with prostitutes","popis":"private event contact me","lat":50.070,"lng":14.430,"userId":"00000000-0000-0000-0000-000000000006"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Grass sale","popis":"selling weed near metro station","lat":49.830,"lng":18.280,"userId":"00000000-0000-0000-0000-000000000007"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Dealer meetup","popis":"contact me for new stuff","lat":50.020,"lng":14.420,"userId":"00000000-0000-0000-0000-000000000008"}'
+
+curl -b cookies.txt -X POST http://localhost:8080/event \
+  -H "Content-Type: application/json" \
+  -d '{"nazev":"Cocaine party","popis":"exclusive pervitin and kokain night","lat":50.110,"lng":14.490,"userId":"00000000-0000-0000-0000-000000000009"}'
+
+
+
+smazat db:
+
+docker exec -it postgres psql -U admin -d admin -c "TRUNCATE TABLE event, alert RESTART IDENTITY CASCADE;"
+
+
+Rozbehnout docker:
+
+cd C:\Users\Marti\Desktop\srumec\admin-api
+docker build -t admin-api-srumec .
+docker run --rm -p 8080:8080 admin-api-srumec
+docker-compose up --build
