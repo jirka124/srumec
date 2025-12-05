@@ -1,0 +1,27 @@
+meta {
+  name: Get One Message in Room
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/v1/chats/direct/messages/get-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "58316ffe-8bda-4d4d-9234-cfc23a3e2eb7",
+    "room_ref": "58316ffe-8bda-4d4d-9234-cfc23a3e2eb7"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
