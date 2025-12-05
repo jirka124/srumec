@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/admin
+    username: admin
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+    open-in-view: false
+
+server:
+  port: 8080
+
+srumec:
+  banned-words: drogy,trava,prostitutka,fet,dealer,weed,drugs,pervitin,kokain,heroin,extáze,mdma,lsd,hašiš,hash,opium,marihuana,ganja,piko,speed,crack,čára,čáry,sniff,koks,šlehnout,šlehnul,šňupat,šňupe,šňupl,stříkačka,injekce,žiletka,trip,tripy,díler,distribuce,drogista,fetovat,feták,feťák,stoned,high,zfetovanej,zfetovaná,deal,prodávat drogy,dealování,dealuje,dealoval,overdose,předávkování,předávkovat,opít,sebojitka,bordel,putyka,smack,hulič,hulit,hulení,hulí,hulil,joint,bong,blunt,šluk,šlukovat,šlehnutí
+

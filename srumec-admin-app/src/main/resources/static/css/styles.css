@@ -1,0 +1,171 @@
+:root {
+    --bg: #0b1020;
+    --card: #11172a;
+    --border: #1e263d;
+    --text: #e8ecf6;
+    --muted: #9aa5bd;
+    --primary: #4f7cff;
+    --primary-600: #3b66e6;
+    --danger: #d64a4a;
+    --success: #2ea043;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body.auth {
+    margin: 0;
+    background: radial-gradient(1200px 800px at 10% -10%, #1b2340 0%, #0b1020 55%) no-repeat fixed;
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+h1 { margin: 0 0 6px; font-size: 22px; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+
+.form { margin-top: 16px; display: grid; gap: 12px; }
+label { display: grid; gap: 6px; }
+input {
+    width: 100%;
+    padding: 10px 12px;
+    background: #0d1326;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+}
+input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,124,255,0.25); }
+
+.btn {
+    padding: 10px 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn:hover { background: var(--primary-600); }
+
+.alert, .note {
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin: 10px 0 0;
+    font-size: 14px;
+}
+.alert { background: #2a1111; color: #ffb3b3; border: 1px solid #492121; }
+.note  { background: #112413; color: #b6f0c1; border: 1px solid #1f3a24; }
+
+code {
+    background: #0d1326;
+    color: #c9d6ff;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+/* Vzhled sladěný s login stránkou */
+:root{
+    --bg: #0b1020;
+    --card: #11172a;
+    --border: #1e263d;
+    --text: #e8ecf6;
+    --muted: #9aa5bd;
+    --primary: #4f7cff;
+    --primary-600: #3b66e6;
+    --danger: #d64a4a;
+    --success: #2ea043;
+}
+
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body.app{
+    margin:0;
+    background: radial-gradient(1200px 800px at 10% -10%, #1b2340 0%, #0b1020 55%) no-repeat fixed;
+    color:var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.app-header{
+    padding:12px 16px;
+    border-bottom:1px solid var(--border);
+    display:flex; gap:12px; align-items:center; justify-content:space-between;
+    background: rgba(16,22,40,0.6);
+    backdrop-filter: blur(6px);
+}
+
+.app-title{ margin:0; font-size:20px; }
+.muted{ color:var(--muted); font-size:12px; }
+code{ background:#0d1326; color:#c9d6ff; padding:2px 6px; border-radius:6px; border:1px solid var(--border); }
+
+.header-actions{ display:flex; align-items:center; gap:8px; }
+.header-actions form{ margin:0; }
+
+.wrap{
+    display:grid; grid-template-columns: 360px 1fr; gap:16px; padding:16px;
+}
+@media (max-width: 1024px){
+    .wrap{ grid-template-columns: 1fr; }
+}
+
+.card{
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.list{ max-height: calc(100vh - 160px); overflow:auto; }
+.list-small{ max-height:220px; }
+
+.item{ padding:10px; border-bottom:1px solid #1a2238; cursor:pointer; border-radius:10px; }
+.item:hover{ background:#0f1730; }
+.item.danger{ border-left:4px solid var(--danger); background:#201119; }
+
+.badge{
+    display:inline-block; font-size:11px; padding:2px 6px; border-radius:6px;
+    background:#3b1420; color:#ffb3b3; margin-left:6px; border:1px solid #5b1a28;
+}
+
+.row{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+
+.btn{ cursor:pointer; padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:#0d1326; color:var(--text); }
+.btn:hover{ border-color:#32406c; }
+.btn.ghost{ background:#0d1326; }
+.btn.danger{ background:#2a1111; border-color:#492121; color:#ffb3b3; }
+.btn.danger:hover{ background:#3a1515; }
+.btn.success{ background:#122615; border-color:#1f3a24; color:#b6f0c1; }
+.btn.success:hover{ background:#163019; }
+
+.btns .btn{ margin-right:8px; }
+
+.map {
+    width: 100%;
+    height: 420px;          /* klidně změň na 320px apod. */
+    border-radius: 12px;
+    position: relative;     /* důležité pro vnitřní absolutní vrstvy Leafletu */
+    overflow: hidden;       /* odstřihne „ulítlé“ dlaždice mimo container */
+}
+
+
+
+/* alert box (chyby) */
+.alert{
+    background:#2a1111; color:#ffb3b3; border:1px solid #492121;
+    padding:10px 12px; border-radius:10px; margin:8px 0;
+}
+
+.detail-title{ margin:6px 0; font-size:18px; }

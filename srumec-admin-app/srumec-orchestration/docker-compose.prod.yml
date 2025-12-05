@@ -1,0 +1,69 @@
+services:
+  events-service:
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+      target: prod
+    command: npm run start
+    env_file:
+      - ../srumec-events-service/.env.prod
+    networks:
+      - shrumec-net
+
+  events-postgres:
+    networks:
+      - shrumec-net
+
+  chats-service:
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+      target: prod
+    command: npm run start
+    env_file:
+      - ../srumec-chats-service/.env.prod
+    networks:
+      - shrumec-net
+
+  expire-service:
+    build:
+      context: ../srumec-expire-service
+      dockerfile: Dockerfile
+      target: prod
+    command: npm run start
+    env_file:
+      - ../srumec-expire-service/.env.prod
+    networks:
+    - shrumec-net
+
+  chats-postgres:
+    networks:
+      - shrumec-net
+
+  pgadmin:
+    networks:
+      - shrumec-net
+
+  rabbitmq-service:
+    networks:
+      - shrumec-net
+
+  auth-service:
+    networks:
+      - shrumec-net
+
+  auth-postgres:
+    networks:
+      - shrumec-net
+
+  auth-gateway:
+    networks:
+      - shrumec-net
+
+  expire-redis:
+    networks:
+      - shrumec-net
+
+networks:
+  shrumec-net:
+    driver: bridge

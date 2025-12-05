@@ -1,0 +1,70 @@
+services:
+  events-service:
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+      target: dev
+    command: npm run dev
+    volumes:
+      - ../srumec-events-service:/app
+      - /app/node_modules
+    env_file:
+      - ../srumec-events-service/.env.dev
+    ports:
+      - "4000:4000"
+
+  chats-service:
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+      target: dev
+    command: npm run dev
+    volumes:
+      - ../srumec-chats-service:/app
+      - /app/node_modules
+    env_file:
+      - ../srumec-chats-service/.env.dev
+    ports:
+      - "4001:4000"
+
+  expire-service:
+    build:
+      context: ../srumec-expire-service
+      dockerfile: Dockerfile
+      target: dev
+    command: npm run dev
+    volumes:
+      - ../srumec-expire-service:/app
+      - /app/node_modules
+    env_file:
+      - ../srumec-expire-service/.env.dev
+
+  events-seeder:
+    container_name: events-seeder
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+      target: dev
+    command: ["npm", "run", "db:seed"]
+    volumes:
+      - ../srumec-events-service:/app
+      - /app/node_modules
+    depends_on:
+      - events-postgres
+    env_file:
+      - ../srumec-events-service/.env.dev
+
+  chats-seeder:
+    container_name: chats-seeder
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+      target: dev
+    command: ["npm", "run", "db:seed"]
+    volumes:
+      - ../srumec-chats-service:/app
+      - /app/node_modules
+    depends_on:
+      - chats-postgres
+    env_file:
+      - ../srumec-chats-service/.env.dev

@@ -1,0 +1,122 @@
+version: "3.9"
+
+services:
+  rabbitmq-service:
+    container_name: rabbitmq-service
+    build: ../srumec-rabbitmq-service
+    ports:
+      - "15672:15672"
+
+  events-service:
+    container_name: events-service
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+    env_file:
+      - ../srumec-events-service/.env
+    depends_on:
+    - events-postgres
+
+  events-postgres:
+    container_name: events-postgres
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: events
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+    - ../srumec-events-service/postgres-db/init:/docker-entrypoint-initdb.d
+
+  chats-service:
+    container_name: chats-service
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+    env_file:
+      - ../srumec-chats-service/.env
+    depends_on:
+    - chats-postgres
+
+  chats-postgres:
+    container_name: chats-postgres
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: chats
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+    - ../srumec-chats-service/postgres-db/init:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5431:80"
+    depends_on:
+      - events-postgres
+      - chats-postgres
+      - auth-postgres
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ../srumec_auth
+    command: ["fastapi", "dev", "main.py", "--host", "0.0.0.0"]
+    volumes:
+      - ../srumec_auth:/code
+    env_file:
+      - ../srumec_auth/.env
+    depends_on:
+      - auth-postgres
+    entrypoint: /code/entrypoint.sh
+
+  auth-postgres:
+    container_name: auth-postgres
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=srumec_auth
+    volumes:
+      - auth_pg_data:/var/lib/postgresql/data
+
+  auth-gateway:
+    container_name: auth-gateway
+    image: nginx:1.25-alpine
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ../srumec_auth/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - auth-service
+
+  expire-redis:
+    image: redis:7-alpine
+    container_name: expire-redis
+    command: ["redis-server", "--notify-keyspace-events", "Ex"]
+    volumes:
+      - expire-redis-data:/data
+
+  expire-service:
+    build:
+      context: ../srumec-expire-service
+      dockerfile: Dockerfile
+    container_name: expire-service
+    env_file:
+      - ../srumec-expire-service/.env
+    depends_on:
+      - rabbitmq-service
+      - expire-redis
+
+volumes:
+  events_pg_data:
+  chats_pg_data:
+  auth_pg_data:
+  expire-redis-data:
+
