@@ -1,6 +1,6 @@
 import express from "express";
 import { validate } from "#middleware/validate.js";
-
+import { authUser } from "#middleware/auth-user.js";
 import {
   GetAllGroupRoomsReq,
   GetOneGroupRoomReq,
@@ -12,6 +12,8 @@ import {
 import { controller } from "#controllers/groupRoomController.js";
 
 const router = express.Router();
+
+router.use(authUser);
 
 router.post(
   "/get-all",

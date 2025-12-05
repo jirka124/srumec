@@ -12,6 +12,24 @@ export const controller = {
     }
   },
 
+  async getOneDirectMessage(req, res) {
+    try {
+      const data = req.validated;
+      const msg = await service.getOneDirectMessage(data);
+
+      if (!msg) {
+        throw produceFail(
+          "egqRzJ5kYDGZS2ts",
+          `Direct message (${data.id}) not found in room ${data.room_ref}`
+        );
+      }
+
+      return res.json(msg);
+    } catch (e) {
+      throw produceFail("q9cRBoh8ERQnU5yl", e);
+    }
+  },
+
   async createDirectMessage(req, res) {
     try {
       const data = req.validated;

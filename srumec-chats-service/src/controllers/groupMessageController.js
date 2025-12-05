@@ -12,6 +12,24 @@ export const controller = {
     }
   },
 
+  async getOneGroupMessage(req, res) {
+    try {
+      const data = req.validated;
+      const msg = await service.getOneGroupMessage(data);
+
+      if (!msg) {
+        throw produceFail(
+          "m6KVhxq9qrYalkxm",
+          `Group message (${data.id}) not found in room ${data.room_ref}`
+        );
+      }
+
+      return res.json(msg);
+    } catch (e) {
+      throw produceFail("Ve9gvXGIfyZ7OWwp", e);
+    }
+  },
+
   async createGroupMessage(req, res) {
     try {
       const data = req.validated;

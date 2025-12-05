@@ -4,14 +4,7 @@ import { produceFail } from "#lib/fail/fail.js";
 export const controller = {
   async getAllDirectRooms(req, res) {
     try {
-      // TODO: REPLACE WITH ID OF LOGGED USER FROM JWT
-      const userId = req.query.id;
-      if (!userId)
-        //
-        return res.status(400).json({
-          error:
-            "TEMP error... Missing ?id query parameter, JWT id will be used",
-        });
+      const userId = req.user.id;
 
       const rooms = await service.getAllDirectRooms({ userId });
       return res.json(rooms);

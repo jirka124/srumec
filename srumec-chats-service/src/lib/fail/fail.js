@@ -54,6 +54,21 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 400,
   },
+  Wv8o7lWyrWhnV6Ka: {
+    message: "Authentication failed",
+    logLevel: LOG_LEVELS.INFO,
+    code: 401,
+  },
+  fIhz89IJJEKE44CU: {
+    message: "Authentication failed",
+    logLevel: LOG_LEVELS.INFO,
+    code: 401,
+  },
+  MoC7EZHdBULE1Kq7: {
+    message: "Authentication failed",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
   rL1h3Y7SJ11lL0Y2: {
     message: "UNHANDLED_ERROR",
     logLevel: LOG_LEVELS.ERROR,
@@ -124,6 +139,16 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  m6KVhxq9qrYalkxm: {
+    message: "Failed to get message of group room",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
+  },
+  Ve9gvXGIfyZ7OWwp: {
+    message: "Failed to get message of group room",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
   "9KcNFh86gHjwlCVn": {
     message: "Failed to create group message",
     logLevel: LOG_LEVELS.ERROR,
@@ -146,6 +171,16 @@ export const fails = {
   },
   Ya6Z2FzCIA3NvxGL: {
     message: "Failed to get messages of direct room",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  egqRzJ5kYDGZS2ts: {
+    message: "Failed to get message of direct room",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
+  },
+  q9cRBoh8ERQnU5yl: {
+    message: "Failed to get message of direct room",
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },

@@ -3,6 +3,7 @@ import { validate } from "#middleware/validate.js";
 
 import {
   GetAllMessagesReq,
+  GetOneMessageReq,
   CreateMessageReq,
   UpdateMessageReq,
   DeleteOneMessageReq,
@@ -16,6 +17,12 @@ router.post(
   "/get-all",
   validate(GetAllMessagesReq),
   controller.getAllDirectMessages
+);
+
+router.post(
+  "/get-one",
+  validate(GetOneMessageReq),
+  controller.getOneDirectMessage
 );
 
 router.post(

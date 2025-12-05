@@ -17,6 +17,7 @@ import {
 import {
   ChatMessageSchema,
   GetAllMessagesReq,
+  GetOneMessageReq,
   CreateMessageReq,
   UpdateMessageReq,
   DeleteOneMessageReq,
@@ -43,6 +44,7 @@ import {
 const defaultResponse = (code) => {
   let description = null;
   if (code === 400) description = "Invalid request";
+  else if (code === 401) description = "Unauthorized";
   else if (code === 404) description = "Not Found";
   else if (code === 500) description = "Internal Server Error";
   else throw new Error("Unknown response code");
@@ -105,6 +107,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -131,6 +134,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -158,6 +162,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -184,6 +189,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -211,6 +217,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -241,6 +248,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -267,6 +275,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -294,6 +303,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -320,6 +330,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -347,6 +358,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -378,6 +390,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -404,6 +417,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -430,6 +444,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -457,6 +472,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -487,6 +503,35 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
+            ...defaultResponse(500),
+          },
+        },
+      },
+
+      "/v1/chats/direct/messages/get-one": {
+        post: {
+          summary: "Get one direct chat message",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: GetOneMessageReq,
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Direct message data",
+              content: {
+                "application/json": {
+                  schema: ChatMessageSchema,
+                },
+              },
+            },
+            ...defaultResponse(400),
+            ...defaultResponse(401),
+            ...defaultResponse(404),
             ...defaultResponse(500),
           },
         },
@@ -513,6 +558,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -539,6 +585,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -566,6 +613,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -596,6 +644,35 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
+            ...defaultResponse(500),
+          },
+        },
+      },
+
+      "/v1/chats/group/messages/get-one": {
+        post: {
+          summary: "Get one group chat message",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: GetOneMessageReq,
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Group message data",
+              content: {
+                "application/json": {
+                  schema: ChatMessageSchema,
+                },
+              },
+            },
+            ...defaultResponse(400),
+            ...defaultResponse(401),
+            ...defaultResponse(404),
             ...defaultResponse(500),
           },
         },
@@ -622,6 +699,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },
@@ -648,6 +726,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -675,6 +754,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(400),
+            ...defaultResponse(401),
             ...defaultResponse(500),
           },
         },

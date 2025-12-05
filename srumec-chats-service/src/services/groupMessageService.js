@@ -26,6 +26,33 @@ export const service = {
     return rows;
   },
 
+  async getOneGroupMessage({ id, room_ref }) {
+    logger.info('Executing "getOneGroupMessage" service with params:', {
+      id,
+      room_ref,
+    });
+
+    const rows = await db.execute(sql`
+    SELECT
+      id,
+      room_ref,
+      user_ref,
+      message,
+      to_iso(sent_time) AS sent_time
+    FROM chat_message
+    WHERE id = ${id}
+      AND room_ref = ${room_ref}
+      AND type = 'group';
+  `);
+
+    logger.info('Executed "getOneGroupMessage" service with params:', {
+      id,
+      room_ref,
+    });
+
+    return rows[0] ?? null;
+  },
+
   async createGroupMessage(msg) {
     logger.info('Executing "createGroupMessage" service with params: ', msg);
 
