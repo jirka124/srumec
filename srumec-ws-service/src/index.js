@@ -3,11 +3,14 @@ import { connectRabbit } from "#lib/rabbit.js";
 import { registerMessaging } from "#messaging/consumer.js";
 import { logger } from "#lib/log/log.js";
 import { produceFail } from "#lib/fail/fail.js";
+import { startDocsServer } from "#lib/staticServer.js";
 
 async function main() {
   await connectRabbit();
   await registerMessaging();
   await wsServer.init();
+
+  startDocsServer(process.env.DOCS_PORT || 4001);
 }
 
 const finalErrorCatch = (e) => {
@@ -19,10 +22,5 @@ main().catch((e) => {
   finalErrorCatch(e);
 });
 
-process.on("unhandledRejection", (e) => {
-  finalErrorCatch(e);
-});
-
-process.on("uncaughtException", (e) => {
-  finalErrorCatch(e);
-});
+process.on("unhandledRejection", finalErrorCatch);
+process.on("uncaughtException", finalErrorCatch);
