@@ -1,10 +1,12 @@
 import { wsServer } from "#ws/server.js";
 import { connectRabbit } from "#lib/rabbit.js";
+import { registerMessaging } from "#messaging/consumer.js";
 import { logger } from "#lib/log/log.js";
 import { produceFail } from "#lib/fail/fail.js";
 
 async function main() {
   await connectRabbit();
+  await registerMessaging();
   await wsServer.init();
 }
 

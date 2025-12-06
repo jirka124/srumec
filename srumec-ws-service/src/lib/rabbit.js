@@ -7,7 +7,7 @@ export const rabbit = new RabbitClient(config.rabbitUrl);
 export async function connectRabbit() {
   await rabbit.connect();
 
-  await rabbit.assertExchange(config.eventsExchange, "direct", {
+  await rabbit.assertExchange(config.chatsExchange, "direct", {
     durable: true,
   });
 

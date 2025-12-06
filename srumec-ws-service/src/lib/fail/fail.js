@@ -61,6 +61,16 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  kl70zfTSDPDd7QeF: {
+    message: "Failed to handle chat.message.created",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  R9PNu6PDh7tCM5Xf: {
+    message: "Failed to publish chat.message.get-consumers",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
 };
 
 export const isFail = (fail) => {
