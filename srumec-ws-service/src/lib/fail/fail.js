@@ -71,6 +71,21 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  "4IMHS6QZZNAZVMMV": {
+    message: "Failed to handle event.created",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  lu96CjZradZCeJ0W: {
+    message: "Failed to handle event.updated",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  rETCMb4l1Ucc5Kdmf: {
+    message: "Failed to handle event.deleted",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
 };
 
 export const isFail = (fail) => {
