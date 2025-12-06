@@ -44,7 +44,13 @@
         "x-dead-letter-exchange": "expire_dlx"
       }
     },
-    { "name": "expire_dlq", "vhost": "/", "durable": true }
+    { "name": "expire_dlq", "vhost": "/", "durable": true },
+    { "name": "ws", "vhost": "/", "durable": true,
+      "arguments": {
+        "x-dead-letter-exchange": "ws_dlx"
+      }
+    },
+    { "name": "ws_dlq", "vhost": "/", "durable": true }
   ],
   "exchanges": [
     { "name": "events_exchange", "vhost": "/", "type": "direct", "durable": true,
@@ -53,11 +59,21 @@
     "auto_delete": false },
     { "name": "expire_exchange", "vhost": "/", "type": "direct", "durable": true,
     "auto_delete": false },
+    { "name": "ws_exchange", "vhost": "/", "type": "direct", "durable": true,
+    "auto_delete": false },
     { "name": "events_dlx", "vhost": "/", "type": "fanout", "durable": true },
     { "name": "chats_dlx", "vhost": "/",  "type": "fanout", "durable": true },
-    { "name": "expire_dlx", "vhost": "/", "type": "fanout", "durable": true }
+    { "name": "expire_dlx", "vhost": "/", "type": "fanout", "durable": true },
+    { "name": "ws_dlx", "vhost": "/", "type": "fanout", "durable": true }
   ],
   "bindings": [
+     {
+      "source": "chats_exchange",
+      "destination": "chats",
+      "destination_type": "queue",
+      "routing_key": "trgt.chats",
+      "vhost": "/"
+    },    
     {
       "source": "events_exchange",
       "destination": "expire",
@@ -87,6 +103,13 @@
       "vhost": "/"
     },
     {
+      "source": "chats_exchange",
+      "destination": "ws",
+      "destination_type": "queue",
+      "routing_key": "chat.message.created",
+      "vhost": "/"
+    },
+    {
       "source": "events_dlx",
       "destination": "events_dlq",
       "destination_type": "queue",
@@ -103,6 +126,13 @@
     {
       "source": "expire_dlx",
       "destination": "expire_dlq",
+      "destination_type": "queue",
+      "routing_key": "",
+      "vhost": "/"
+    },
+    {
+      "source": "ws_dlx",
+      "destination": "ws_dlq",
       "destination_type": "queue",
       "routing_key": "",
       "vhost": "/"
