@@ -35,7 +35,7 @@ This project works as a **monorepo** that contains other services using **git su
 | `./srumec_auth`             | [Repo](https://github.com/thevidko/srumec_auth)             |
 | `./srumec-admin-app`        | [Repo](https://github.com/xdmdxd/AdminAPISrumec)            |
 | `./srumec-expire-service`   | [Repo](https://github.com/jirka124/srumec-expire-service)   |
-| `./srumec-users-service`    | [Repo](https://github.com/shrrdz?tab=repositories)          |
+| `./srumec-users-service`    | [Repo](https://github.com/shrrdz/srumec-users-service)      |
 | `./srumec-ws-service`       | [Repo](https://github.com/jirka124/srumec-ws-service)       |
 
 ---
