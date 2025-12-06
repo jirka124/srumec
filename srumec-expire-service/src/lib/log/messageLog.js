@@ -5,17 +5,22 @@ export function wrapMessageHandler(handler, label = "") {
     const start = Date.now();
 
     const routingKey = ctx.fields.routingKey;
+    const msgType = content?.type ?? "unknown.type";
 
     try {
       await handler(content, ctx, queue);
 
       const ms = Date.now() - start;
 
-      logger.info(`Handled MSG ${routingKey} : ${ms}ms`);
+      logger.info(
+        `Handled MSG -> route: ${routingKey} | type: ${msgType} | exec: ${ms}ms`
+      );
     } catch (err) {
       const ms = Date.now() - start;
 
-      logger.error(`Failed MSG ${routingKey} : ${ms}ms\n${err}`);
+      logger.error(
+        `Failed MSG -> route: ${routingKey} | type: ${msgType} | exec :${ms}ms\n${err}`
+      );
 
       throw err;
     }
