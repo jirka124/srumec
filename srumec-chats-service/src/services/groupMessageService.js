@@ -1,6 +1,7 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
 import { logger } from "#lib/log/log.js";
+import { publishChatMessageCreated } from "#messaging/publisher.js";
 
 export const service = {
   async getAllGroupMessages({ room_ref }) {
@@ -95,6 +96,8 @@ export const service = {
       message,
       to_iso(sent_time) AS sent_time;
   `);
+
+    publishChatMessageCreated({ ...result[0], type: "group" });
 
     logger.info('Executed "createGroupMessage" service with params: ', msg);
 

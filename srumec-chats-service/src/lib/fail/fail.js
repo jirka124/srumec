@@ -229,6 +229,11 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  YouizOnxAcqsIdkh: {
+    message: "Failed to handle chat.message.get-consumers",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
 };
 
 export const isFail = (fail) => {

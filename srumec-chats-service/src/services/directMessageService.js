@@ -1,6 +1,7 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
 import { logger } from "#lib/log/log.js";
+import { publishChatMessageCreated } from "#messaging/publisher.js";
 
 export const service = {
   async getAllDirectMessages({ room_ref }) {
@@ -96,6 +97,8 @@ export const service = {
       message,
       to_iso(sent_time) AS sent_time;
   `);
+
+    publishChatMessageCreated({ ...result[0], type: "direct" });
 
     logger.info('Executed "createDirectMessage" service with params: ', msg);
 
