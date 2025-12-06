@@ -103,6 +103,12 @@ Auth Service Docs (Swagger):
 ### **6. WebSocket Service**
 
 - Node.js backend forwarding real-time updates
+- Port:
+  - exposed: `4004 (dev only)`, `8000 (proxied)`
+  - internal: `4000 (ws)`, `4001 (http docs)`
+
+WebSocket Service Docs:
+➡ http://localhost:8000/ws/docs
 
 ### **7. API Gateway**
 
