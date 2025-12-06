@@ -125,7 +125,7 @@ fn handle_get_all_request(_request: &str) -> (String, String)
 // add a user
 fn handle_post_request(request: &str) -> (String, String)
 {
-    let regex_email: Regex = Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap();
+    let regex_email = Regex::new(r"^[^\s@.]+(\.[^\s@.]+)*@[^\s@.]+(\.[^\s@.]+)+$").unwrap();
 
     match (get_user_request_body(&request), Client::connect(DB_URL.unwrap_or(""), NoTls))
     {
