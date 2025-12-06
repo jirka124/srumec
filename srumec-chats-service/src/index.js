@@ -9,6 +9,7 @@ import directMessageRoutes from "#routes/directMessageRoutes.js";
 import groupMessageRoutes from "#routes/groupMessageRoutes.js";
 import { generateOpenApiSpec } from "#root/docs/openapi.js";
 import { logger } from "#lib/log/log.js";
+import { produceFail } from "#lib/fail/fail.js";
 import { catchError } from "#middleware/error-catcher.js";
 import { logEndpoint } from "#middleware/endpoint-log.js";
 import { connectRabbit } from "#lib/rabbit.js";
