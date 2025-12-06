@@ -53,6 +53,7 @@ export const eventController = {
   async createOne(req, res) {
     try {
       const data = req.validated;
+      // TODO: only allow status and other from admin
 
       const ev = await eventService.createEvent(data);
       res.json(ev);
@@ -64,6 +65,7 @@ export const eventController = {
   async updateOne(req, res) {
     try {
       const data = req.validated;
+      // TODO: only allow status and other from admin
 
       const ev = await eventService.updateEvent(data);
       if (!ev) {

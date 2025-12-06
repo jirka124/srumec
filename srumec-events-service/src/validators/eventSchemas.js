@@ -91,7 +91,7 @@ export const EventCreateReqSchema = z.object({
       message: "happen_time must be at least 5 minutes in the future",
     }
   ),
-  status: fields.status.optional().default("pending"),
+  status: fields.status.optional(),
 });
 
 export const EventUpdateReqSchema = z.object({

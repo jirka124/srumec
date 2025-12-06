@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS events (
   description VARCHAR(512) DEFAULT NULL,
   location GEOGRAPHY(Point, 4326) NOT NULL,
   happen_time TIMESTAMPTZ NOT NULL,
-  status event_approve_state_type NOT NULL DEFAULT 'pending'
+  status event_approve_state_type NOT NULL DEFAULT 'approved'
 );
 
 -- COMMENTS

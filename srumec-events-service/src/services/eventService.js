@@ -6,7 +6,7 @@ import {
   publishEventUpdated,
   publishEventDeleted,
 } from "#messaging/publisher.js";
-import {} from "#messaging/publisher.js";
+import { resolveEventStatus } from "#root/lib/moderation/index.js";
 
 export const eventService = {
   async getNearbyEvents({ latitude, longitude, radius_m }) {
@@ -119,8 +119,14 @@ export const eventService = {
   async createEvent(data) {
     logger.info('Executing "createEvent" service with params: ', data);
 
-    const columns = ["organizer_ref", "title"];
-    const values = [data.organizer_ref, data.title];
+    const status = resolveEventStatus({
+      incomingStatus: data.status,
+      title: data.title,
+      description: data.description,
+    });
+
+    const columns = ["organizer_ref", "title", "status"];
+    const values = [data.organizer_ref, data.title, status];
 
     if (data.id !== undefined) {
       columns.unshift("id");
@@ -145,11 +151,6 @@ export const eventService = {
         4326
       )::geography
     `);
-    }
-
-    if (data.status !== undefined) {
-      columns.push("status");
-      values.push(data.status);
     }
 
     const columnsSql = sql.raw(columns.map((c) => `"${c}"`).join(", "));
@@ -184,7 +185,6 @@ export const eventService = {
 
     if (data.organizer_ref !== undefined) {
       updates.push(sql`organizer_ref = ${data.organizer_ref}`);
-      shouldResetStatus = true;
     }
 
     if (data.title !== undefined) {
@@ -213,7 +213,11 @@ export const eventService = {
     if (data.status !== undefined) {
       updates.push(sql`status = ${data.status}`);
     } else if (shouldResetStatus) {
-      updates.push(sql`status = 'pending'`);
+      const status = resolveEventStatus({
+        title: data?.title,
+        description: data?.description,
+      });
+      updates.push(sql`status = ${status}`);
     }
 
     if (updates.length === 0) {
