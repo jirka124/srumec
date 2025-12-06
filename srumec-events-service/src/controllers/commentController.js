@@ -16,8 +16,9 @@ export const commentController = {
   async createOne(req, res) {
     try {
       const data = req.validated;
+      const user_name = req.user.name; // TODO: z admin role se nastaví null
 
-      const ev = await commentService.createOne(data);
+      const ev = await commentService.createOne({ ...data, user_name });
       res.json(ev);
     } catch (e) {
       throw produceFail("cOxyZuGDMDUqgzyD", e);

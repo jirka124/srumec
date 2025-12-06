@@ -11,6 +11,7 @@ export const commentService = {
         id,
         event_ref,
         user_ref,
+        user_name,
         reply_to_ref,
         content,
         to_iso (create_time) AS create_time
@@ -27,10 +28,17 @@ export const commentService = {
   async createOne(data) {
     logger.info('Executing "createOne" service with params: ', data);
 
-    const columns = ["event_ref", "user_ref", "reply_to_ref", "content"];
+    const columns = [
+      "event_ref",
+      "user_ref",
+      "user_name",
+      "reply_to_ref",
+      "content",
+    ];
     const values = [
       data.event_ref,
       data.user_ref,
+      data.user_name,
       data.reply_to_ref,
       data.content,
     ];
@@ -55,6 +63,7 @@ export const commentService = {
         id,
         event_ref,
         user_ref,
+        user_name,
         reply_to_ref,
         content,
         to_iso (create_time) AS create_time;
@@ -102,6 +111,7 @@ export const commentService = {
         id,
         event_ref,
         user_ref,
+        user_name,
         reply_to_ref,
         content,
         to_iso (create_time) AS create_time;

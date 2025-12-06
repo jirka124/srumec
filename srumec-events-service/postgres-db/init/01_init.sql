@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS event_comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_ref UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
   user_ref UUID NOT NULL,
+  user_name TEXT NULL,
   reply_to_ref UUID NULL REFERENCES event_comments(id) ON DELETE SET NULL,
   content TEXT NOT NULL,
   create_time TIMESTAMPTZ NOT NULL DEFAULT NOW()

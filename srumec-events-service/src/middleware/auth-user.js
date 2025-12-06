@@ -16,16 +16,17 @@ export function authUser(req, res, next) {
 
     const payload = jwt.decode(token);
 
-    if (!payload || !payload.id || !payload.role) {
+    if (!payload || !payload.id || !payload.role || !payload.name) {
       throw produceFail(
         "fIhz89IJJEKE44CU",
-        "Anonymous users are not permitted, id or role missing in JWT token"
+        "Anonymous users are not permitted, id, role or name missing in JWT token"
       );
     }
 
     req.user = {
       id: payload.id,
       role: payload.role,
+      name: payload.name,
       exp: payload.exp,
     };
 
