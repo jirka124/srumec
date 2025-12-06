@@ -169,7 +169,7 @@ export const eventService = {
       status;
   `);
 
-    await publishEventCreated(result[0]);
+    publishEventCreated(result[0]);
 
     logger.info('Executed "createEvent" service with params: ', data);
 
@@ -181,6 +181,11 @@ export const eventService = {
 
     const updates = [];
     let shouldResetStatus = false;
+
+    if (data.organizer_ref !== undefined) {
+      updates.push(sql`organizer_ref = ${data.organizer_ref}`);
+      shouldResetStatus = true;
+    }
 
     if (data.title !== undefined) {
       updates.push(sql`title = ${data.title}`);
@@ -231,7 +236,7 @@ export const eventService = {
   `);
 
     const event = result[0] ?? null;
-    if (event !== null) await publishEventUpdated(event);
+    if (event !== null) publishEventUpdated(event);
 
     logger.info('Executed "updateEvent" service with params: ', data);
 
@@ -247,7 +252,7 @@ export const eventService = {
     RETURNING id;
   `);
 
-    if (result.length) await publishEventDeleted(id);
+    if (result.length) publishEventDeleted(id);
 
     logger.info('Executed "deleteEvent" service with params: ', { id });
 
