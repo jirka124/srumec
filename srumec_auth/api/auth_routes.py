@@ -43,8 +43,9 @@ async def login_for_access_token(
         )
 
     token_payload = {
-        "id": str(user.id),  # Důležité: UUID musíte převést na string!
-        "role": user.role  # Přidání role (např. "admin" nebo "user")
+        "id": str(user.id),
+        "role": user.role,
+        "name": user.name,
     }
     access_token = auth_service.create_access_token(data=token_payload)
 
