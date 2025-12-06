@@ -1,6 +1,6 @@
 {
   "name": "ws-service",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "homepage": "https://github.com/jirka124/srumec-ws-service#readme",
   "bugs": {
@@ -27,7 +27,7 @@
     "#ws/*": "./src/ws/*"
   },
   "dependencies": {
-    "@srumec/rabbitmq-client": "^0.0.9",
+    "@srumec/rabbitmq-client": "^0.0.10",
     "amqplib": "^0.10.9",
     "jsonwebtoken": "^9.0.2",
     "ws": "^8.18.3"
