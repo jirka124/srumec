@@ -1,38 +1,41 @@
 from uuid import UUID
-
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Optional
 
-# -- Základní schéma s atributy, které jsou společné --
+# -- Základní společné atributy --
 class UserBase(BaseModel):
-    email: EmailStr  # EmailStr automaticky validuje, že jde o platný email
+    email: EmailStr
     name: str
 
-# -- Schéma pro vytváření uživatele--
+# -- Create (Registrace) --
 class UserCreate(UserBase):
-    name: str
     password: str
 
+# -- Update (Co lze měnit) --
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    name: Optional[str] = None
+    role: Optional[str] = None
+    banned: Optional[bool] = None
 
-# -- Schéma pro čtení uživatele --
-class User(UserBase):
+# -- Čtení (Response) --
+# Toto schéma použijeme pro vracení dat z API (bez hesla)
+class UserResponse(UserBase):
     id: UUID
     role: str
-    name: str
+    banned: bool     # <-- Nové pole
     created_at: datetime
+
     class Config:
         from_attributes = True
 
-# --- Schémata pro login a token ---
+# -- Login --
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str
-    user: User
+    user: UserResponse # <-- Použijeme UserResponse místo User, je to čistší

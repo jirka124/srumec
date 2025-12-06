@@ -6,7 +6,7 @@ import os
 # Importy z tvých modulů
 from core.config import settings
 from db.deps import get_db
-from api import auth_routes
+from api import auth_routes, user_routes
 
 # DŮLEŽITÉ: root_path="/auth" říká FastAPI, že běží za proxy s tímto prefixem.
 # Díky tomu bude Swagger UI správně generovat cesty (např. /auth/openapi.json).
@@ -49,3 +49,4 @@ async def validate_token(request: Request):
 
 # Zahrneme tvůj existující router s login/register
 app.include_router(auth_routes.router)
+app.include_router(user_routes.router, prefix="/users", tags=["Users"])
