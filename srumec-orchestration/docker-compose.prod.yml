@@ -1,4 +1,9 @@
 services:
+  rabbitmq-service:
+    build: ../srumec-rabbitmq-service
+    env_file:
+      - ../srumec-rabbitmq-service/.env.prod
+
   events-service:
     build:
       context: ../srumec-events-service
@@ -7,12 +12,25 @@ services:
     command: npm run start
     env_file:
       - ../srumec-events-service/.env.prod
+      - ../srumec-rabbitmq-service/.env.prod
     networks:
       - shrumec-net
 
   events-postgres:
+    image: postgis/postgis:16-3.4
+    env_file:
+      - ../srumec-events-service/.env.prod
     networks:
       - shrumec-net
+
+  events-seeder:
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
+      target: prod
+    command: ["npm", "run", "db:init"]
+    env_file:
+      - ../srumec-events-service/.env.prod
 
   chats-service:
     build:
@@ -20,6 +38,25 @@ services:
       dockerfile: Dockerfile
       target: prod
     command: npm run start
+    env_file:
+      - ../srumec-chats-service/.env.prod
+      - ../srumec-rabbitmq-service/.env.prod
+    networks:
+      - shrumec-net
+
+  chats-postgres:
+    image: postgis/postgis:16-3.4
+    env_file:
+      - ../srumec-chats-service/.env.prod
+    networks:
+      - shrumec-net
+
+  chats-seeder:
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
+      target: prod
+    command: ["npm", "run", "db:init"]
     env_file:
       - ../srumec-chats-service/.env.prod
     networks:
@@ -33,6 +70,7 @@ services:
     command: npm run start
     env_file:
       - ../srumec-expire-service/.env.prod
+      - ../srumec-rabbitmq-service/.env.prod
     networks:
       - shrumec-net
 
@@ -45,18 +83,11 @@ services:
     command: npm run start
     env_file:
       - ../srumec-ws-service/.env.prod
-    networks:
-      - shrumec-net
-
-  chats-postgres:
+      - ../srumec-rabbitmq-service/.env.prod
     networks:
       - shrumec-net
 
   pgadmin:
-    networks:
-      - shrumec-net
-
-  rabbitmq-service:
     networks:
       - shrumec-net
 

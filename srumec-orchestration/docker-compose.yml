@@ -4,6 +4,8 @@ services:
   rabbitmq-service:
     container_name: rabbitmq-service
     build: ../srumec-rabbitmq-service
+    env_file:
+      - ../srumec-rabbitmq-service/.env
     ports:
       - "15672:15672"
 
@@ -20,12 +22,22 @@ services:
   events-postgres:
     container_name: events-postgres
     image: postgis/postgis:16-3.4
-    environment:
-      POSTGRES_DB: events
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
+    env_file:
+      - ../srumec-events-service/.env
+
+  events-seeder:
+    container_name: events-seeder
+    build:
+      context: ../srumec-events-service
+      dockerfile: Dockerfile
     volumes:
-    - ../srumec-events-service/postgres-db/init:/docker-entrypoint-initdb.d
+      - ../srumec-events-service:/app
+      - /app/node_modules
+    depends_on:
+      - events-postgres
+    env_file:
+      - ../srumec-events-service/.env
+    restart: "no"
 
   chats-service:
     container_name: chats-service
@@ -35,17 +47,27 @@ services:
     env_file:
       - ../srumec-chats-service/.env
     depends_on:
-    - chats-postgres
+      - chats-postgres
 
   chats-postgres:
     container_name: chats-postgres
     image: postgis/postgis:16-3.4
-    environment:
-      POSTGRES_DB: chats
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
+    env_file:
+      - ../srumec-chats-service/.env
+
+  chats-seeder:
+    container_name: chats-seeder
+    build:
+      context: ../srumec-chats-service
+      dockerfile: Dockerfile
     volumes:
-    - ../srumec-chats-service/postgres-db/init:/docker-entrypoint-initdb.d
+      - ../srumec-chats-service:/app
+      - /app/node_modules
+    depends_on:
+      - chats-postgres
+    env_file:
+      - ../srumec-chats-service/.env
+    restart: "no"
 
   pgadmin:
     image: dpage/pgadmin4

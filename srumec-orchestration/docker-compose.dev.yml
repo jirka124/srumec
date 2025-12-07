@@ -1,4 +1,9 @@
 services:
+  rabbitmq-service:
+    build: ../srumec-rabbitmq-service
+    env_file:
+      - ../srumec-rabbitmq-service/.env.dev
+
   events-service:
     build:
       context: ../srumec-events-service
@@ -10,8 +15,14 @@ services:
       - /app/node_modules
     env_file:
       - ../srumec-events-service/.env.dev
+      - ../srumec-rabbitmq-service/.env.dev
     ports:
       - "4000:4000"
+
+  events-postgres:
+    image: postgis/postgis:16-3.4
+    env_file:
+      - ../srumec-events-service/.env.dev
 
   chats-service:
     build:
@@ -24,8 +35,14 @@ services:
       - /app/node_modules
     env_file:
       - ../srumec-chats-service/.env.dev
+      - ../srumec-rabbitmq-service/.env.dev
     ports:
       - "4001:4000"
+
+  chats-postgres:
+    image: postgis/postgis:16-3.4
+    env_file:
+      - ../srumec-chats-service/.env.dev
 
   expire-service:
     build:
@@ -38,6 +55,7 @@ services:
       - /app/node_modules
     env_file:
       - ../srumec-expire-service/.env.dev
+      - ../srumec-rabbitmq-service/.env.dev
 
   ws-service:
     container_name: ws-service
@@ -51,6 +69,7 @@ services:
       - /app/node_modules
     env_file:
       - ../srumec-ws-service/.env.dev
+      - ../srumec-rabbitmq-service/.env.dev
     ports:
       - '4004:4001'
 
@@ -63,31 +82,19 @@ services:
       - "4003:8080"
 
   events-seeder:
-    container_name: events-seeder
     build:
       context: ../srumec-events-service
       dockerfile: Dockerfile
       target: dev
-    command: ["npm", "run", "db:seed"]
-    volumes:
-      - ../srumec-events-service:/app
-      - /app/node_modules
-    depends_on:
-      - events-postgres
+    command: ["npm", "run", "db:init"]
     env_file:
       - ../srumec-events-service/.env.dev
 
   chats-seeder:
-    container_name: chats-seeder
     build:
       context: ../srumec-chats-service
       dockerfile: Dockerfile
       target: dev
-    command: ["npm", "run", "db:seed"]
-    volumes:
-      - ../srumec-chats-service:/app
-      - /app/node_modules
-    depends_on:
-      - chats-postgres
+    command: ["npm", "run", "db:init"]
     env_file:
       - ../srumec-chats-service/.env.dev
