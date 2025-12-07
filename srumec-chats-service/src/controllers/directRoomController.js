@@ -1,4 +1,5 @@
-import { service } from "#services/directRoomService.js";
+import { service as directRoomService } from "#services/directRoomService.js";
+import { policy as directRoomPolicy } from "#policies/chat/directRoomPolicy.js";
 import { produceFail } from "#lib/fail/fail.js";
 
 export const controller = {
@@ -6,7 +7,7 @@ export const controller = {
     try {
       const userId = req.user.id;
 
-      const rooms = await service.getAllDirectRooms({ userId });
+      const rooms = await directRoomService.getAllDirectRooms({ userId });
       return res.json(rooms);
     } catch (e) {
       throw produceFail("TJdMl5QKdmUjneJi", e);
@@ -16,14 +17,16 @@ export const controller = {
   async getOneDirectRoom(req, res) {
     try {
       const data = req.validated;
-      const room = await service.getOneDirectRoom(data);
 
+      const room = await directRoomService.getOneDirectRoom({ id: data.id });
       if (!room) {
         throw produceFail(
           "5DkTtaIOyxYvO41n",
           `direct room with given ID { ${data.id} } not found`
         );
       }
+
+      directRoomPolicy.validateGetOne(req, room);
 
       return res.json(room);
     } catch (e) {
@@ -33,9 +36,11 @@ export const controller = {
 
   async createOneDirectRoom(req, res) {
     try {
-      const data = req.validated;
+      let data = req.validated;
 
-      const created = await service.createOneDirectRoom(data);
+      data = directRoomPolicy.validateCreate(req, data);
+
+      const created = await directRoomService.createOneDirectRoom(data);
       return res.json(created);
     } catch (e) {
       throw produceFail("bxJIfB6nxlSOzTGk", e);
@@ -44,7 +49,19 @@ export const controller = {
 
   async updateOneDirectRoom(req, res) {
     try {
-      const data = req.validated;
+      let data = req.validated;
+
+      const existing = await directRoomService.getOneDirectRoom({
+        id: data.id,
+      });
+      if (!existing) {
+        throw produceFail(
+          "qfyUHgdTurIcknii",
+          `Direct room with ID ${data.id} not found`
+        );
+      }
+
+      data = directRoomPolicy.validateUpdate(req, data, existing);
 
       const updated = await service.updateOneDirectRoom(data);
       return res.json(updated);
@@ -57,7 +74,19 @@ export const controller = {
     try {
       const data = req.validated;
 
-      const count = await service.deleteOneDirectRoom(data);
+      const existing = await directRoomService.getOneDirectRoom({
+        id: data.id,
+      });
+      if (!existing) {
+        throw produceFail(
+          "w2WWwhUVImgs0HLd",
+          `Direct room with ID ${data.id} not found`
+        );
+      }
+
+      directRoomPolicy.validateDelete(req, data, existing);
+
+      const count = await directRoomService.deleteOneDirectRoom(data);
       return res.json({ count });
     } catch (e) {
       throw produceFail("8m4JFoHIruZf8iHc", e);

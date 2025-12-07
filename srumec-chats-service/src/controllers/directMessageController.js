@@ -1,11 +1,26 @@
-import { service } from "#services/directMessageService.js";
+import { service as directMessageService } from "#services/directMessageService.js";
+import { service as directRoomService } from "#services/directRoomService.js";
+import { policy as directMessagePolicy } from "#policies/chat/directMessagePolicy.js";
 import { produceFail } from "#lib/fail/fail.js";
 
 export const controller = {
   async getAllDirectMessages(req, res) {
     try {
       const data = req.validated;
-      const rows = await service.getAllDirectMessages(data);
+
+      const room = await directRoomService.getOneDirectRoom({
+        id: data.room_ref,
+      });
+      if (!room) {
+        throw produceFail(
+          "WjmabVPRrhSEacUF",
+          `Direct room with ID ${data.room_ref} not found`
+        );
+      }
+
+      directMessagePolicy.validateGetAll(req, room);
+
+      const rows = await directMessageService.getAllDirectMessages(data);
       return res.json(rows);
     } catch (e) {
       throw produceFail("Ya6Z2FzCIA3NvxGL", e);
@@ -15,14 +30,27 @@ export const controller = {
   async getOneDirectMessage(req, res) {
     try {
       const data = req.validated;
-      const msg = await service.getOneDirectMessage(data);
-
+      const msg = await directMessageService.getOneDirectMessage({
+        id: data.id,
+      });
       if (!msg) {
         throw produceFail(
           "egqRzJ5kYDGZS2ts",
-          `Direct message (${data.id}) not found in room ${data.room_ref}`
+          `Direct message ( ${data.id} ) not found`
         );
       }
+
+      const room = await directRoomService.getOneDirectRoom({
+        id: msg.room_ref,
+      });
+      if (!room) {
+        throw produceFail(
+          "jABtk29m80RQLfPe",
+          `Direct room with ID ( ${msg.room_ref} ) not found`
+        );
+      }
+
+      directMessagePolicy.validateGetOne(req, room);
 
       return res.json(msg);
     } catch (e) {
@@ -32,8 +60,21 @@ export const controller = {
 
   async createDirectMessage(req, res) {
     try {
-      const data = req.validated;
-      const result = await service.createDirectMessage(data);
+      let data = req.validated;
+
+      const room = await directRoomService.getOneDirectRoom({
+        id: data.room_ref,
+      });
+      if (!room) {
+        throw produceFail(
+          "YSR4eMl3NYVRQivW",
+          `Direct room with ID ${data.room_ref} not found`
+        );
+      }
+
+      data = directMessagePolicy.validateCreate(req, data, room);
+
+      const result = await directMessageService.createDirectMessage(data);
       return res.json(result);
     } catch (e) {
       throw produceFail("RNKOK3u0ZmKxCgeu", e);
@@ -42,8 +83,31 @@ export const controller = {
 
   async updateDirectMessage(req, res) {
     try {
-      const data = req.validated;
-      const result = await service.updateDirectMessage(data);
+      let data = req.validated;
+
+      const existing = await directMessageService.getOneDirectMessage({
+        id: data.id,
+      });
+      if (!existing) {
+        throw produceFail(
+          "SuimqpUkrU1cbaQ1",
+          `Direct message with ID ${data.id} not found`
+        );
+      }
+
+      const room = await directRoomService.getOneDirectRoom({
+        id: existing.room_ref,
+      });
+      if (!room) {
+        throw produceFail(
+          "a49TjX06VogslYNW",
+          `Direct room with ID ${existing.room_ref} not found`
+        );
+      }
+
+      data = directMessagePolicy.validateUpdate(req, data, { existing, room });
+
+      const result = await directMessageService.updateDirectMessage(data);
 
       if (!result) {
         throw produceFail(
@@ -61,7 +125,21 @@ export const controller = {
   async deleteDirectMessage(req, res) {
     try {
       const data = req.validated;
-      const count = await service.deleteDirectMessage(data);
+
+      const existing = await directMessageService.getOneDirectMessage({
+        id: data.id,
+      });
+      if (!existing) {
+        throw produceFail(
+          "wUf7uMBcb0zvciev",
+          `Direct message with ID ${data.id} not found`,
+          404
+        );
+      }
+
+      directMessagePolicy.validateDelete(req, existing);
+
+      const count = await directMessageService.deleteDirectMessage(data);
       return res.json({ count });
     } catch (e) {
       throw produceFail("KTaKlBo3mVinXUXn", e);

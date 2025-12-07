@@ -27,10 +27,9 @@ export const service = {
     return rows;
   },
 
-  async getOneGroupMessage({ id, room_ref }) {
+  async getOneGroupMessage({ id }) {
     logger.info('Executing "getOneGroupMessage" service with params:', {
       id,
-      room_ref,
     });
 
     const rows = await db.execute(sql`
@@ -42,13 +41,11 @@ export const service = {
       to_iso(sent_time) AS sent_time
     FROM chat_message
     WHERE id = ${id}
-      AND room_ref = ${room_ref}
       AND type = 'group';
   `);
 
     logger.info('Executed "getOneGroupMessage" service with params:', {
       id,
-      room_ref,
     });
 
     return rows[0] ?? null;

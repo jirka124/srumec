@@ -1,11 +1,21 @@
-import { service } from "#services/groupMessageService.js";
+import { service as groupMessageService } from "#services/groupMessageService.js";
+import { service as groupMemberService } from "#services/chatGroupMemberService.js";
+import { policy as groupMessagePolicy } from "#policies/chat/groupMessagePolicy.js";
 import { produceFail } from "#lib/fail/fail.js";
 
 export const controller = {
   async getAllGroupMessages(req, res) {
     try {
       const data = req.validated;
-      const rows = await service.getAllGroupMessages(data);
+
+      const membership = await groupMemberService.getMember({
+        group_ref: data.room_ref,
+        user_ref: req.user.id,
+      });
+
+      groupMessagePolicy.validateGetAll(req, data, membership);
+
+      const rows = await groupMessageService.getAllGroupMessages(data);
       return res.json(rows);
     } catch (e) {
       throw produceFail("uTngf8rBFMGl2kG9", e);
@@ -15,14 +25,21 @@ export const controller = {
   async getOneGroupMessage(req, res) {
     try {
       const data = req.validated;
-      const msg = await service.getOneGroupMessage(data);
+      const msg = await groupMessageService.getOneGroupMessage(data);
 
       if (!msg) {
         throw produceFail(
           "m6KVhxq9qrYalkxm",
-          `Group message (${data.id}) not found in room ${data.room_ref}`
+          `Group message (${data.id}) not found`
         );
       }
+
+      const membership = await groupMemberService.getMember({
+        group_ref: msg.room_ref,
+        user_ref: req.user.id,
+      });
+
+      groupMessagePolicy.validateGetOne(req, data, membership);
 
       return res.json(msg);
     } catch (e) {
@@ -32,8 +49,16 @@ export const controller = {
 
   async createGroupMessage(req, res) {
     try {
-      const data = req.validated;
-      const result = await service.createGroupMessage(data);
+      let data = req.validated;
+
+      const membership = await groupMemberService.getMember({
+        group_ref: data.room_ref,
+        user_ref: req.user.id,
+      });
+
+      data = groupMessagePolicy.validateCreate(req, data, membership);
+
+      const result = await groupMessageService.createGroupMessage(data);
       return res.json(result);
     } catch (e) {
       throw produceFail("9KcNFh86gHjwlCVn", e);
@@ -42,8 +67,29 @@ export const controller = {
 
   async updateGroupMessage(req, res) {
     try {
-      const data = req.validated;
-      const result = await service.updateGroupMessage(data);
+      let data = req.validated;
+
+      const existing = await groupMessageService.getOneGroupMessage({
+        id: data.id,
+      });
+      if (!existing) {
+        throw produceFail(
+          "zdSE7hudqYfAS0pV",
+          `Group message with ID ${data.id} not found`
+        );
+      }
+
+      const membership = await groupMemberService.getMember({
+        group_ref: existing.room_ref,
+        user_ref: req.user.id,
+      });
+
+      data = groupMessagePolicy.validateUpdate(req, data, {
+        existing,
+        membership,
+      });
+
+      const result = await groupMessageService.updateGroupMessage(data);
 
       if (!result) {
         throw produceFail(
@@ -61,7 +107,26 @@ export const controller = {
   async deleteGroupMessage(req, res) {
     try {
       const data = req.validated;
-      const count = await service.deleteGroupMessage(data);
+
+      const existing = await groupMessageService.getOneGroupMessage({
+        id: data.id,
+      });
+      if (!existing) {
+        throw produceFail(
+          "Op6MLAVOGSmEIHjT",
+          `Group message with ID ${data.id} not found`,
+          404
+        );
+      }
+
+      const membership = await groupMemberService.getMember({
+        group_ref: existing.room_ref,
+        user_ref: req.user.id,
+      });
+
+      groupMessagePolicy.validateDelete(req, data, { existing, membership });
+
+      const count = await groupMessageService.deleteGroupMessage(data);
       return res.json({ count });
     } catch (e) {
       throw produceFail("sGo1aopwfF46boKb", e);

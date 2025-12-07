@@ -1,6 +1,7 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
 import { logger } from "#lib/log/log.js";
+import { service as chatGroupMemberService } from "#services/chatGroupMemberService.js";
 
 export const service = {
   async getAllGroupRooms({ userId }) {
@@ -43,7 +44,7 @@ export const service = {
     return rows[0] ?? null;
   },
 
-  async createOneGroupRoom(room) {
+  async createOneGroupRoom(room, adminId) {
     logger.info('Executing "createOneGroupRoom" service with params: ', room);
 
     const cols = [];
@@ -73,6 +74,13 @@ export const service = {
       name,
       to_iso(create_time) AS create_time;
   `);
+
+    // automatically create first admin user of group (member creating room)
+    await chatGroupMemberService.createMember({
+      user_ref: adminId,
+      group_ref: result[0].id,
+      role: "admin",
+    });
 
     logger.info('Executed "createOneGroupRoom" service with params: ', room);
 

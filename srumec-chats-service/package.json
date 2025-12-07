@@ -1,6 +1,6 @@
 {
   "name": "srumec-chats-service",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "",
   "homepage": "https://github.com/jirka124/srumec-chats-service#readme",
   "bugs": {
@@ -29,7 +29,8 @@
     "#lib/*": "./src/lib/*",
     "#middleware/*": "./src/middleware/*",
     "#validators/*": "./src/validators/*",
-    "#messaging/*": "./src/messaging/*"
+    "#messaging/*": "./src/messaging/*",
+    "#policies/*": "./src/policies/*"
   },
   "dependencies": {
     "@srumec/rabbitmq-client": "^0.0.10",
