@@ -1,8 +1,10 @@
+
+
 {
   "users": [
     {
-      "name": "admin",
-      "password": "admin",
+      "name": "${RABBIT_USER}",
+      "password": "${RABBIT_PASS}",
       "tags": "administrator"
     }
   ],
@@ -11,7 +13,7 @@
   ],
   "permissions": [
     {
-      "user": "admin",
+      "user": "${RABBIT_USER}",
       "vhost": "/",
       "configure": ".*",
       "write": ".*",
