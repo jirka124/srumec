@@ -2,7 +2,7 @@ import { sql, waitForDatabase } from "./db.js";
 import seedEvents from "./01-events.js";
 import seedComments from "./02-comments.js";
 
-async function main() {
+export async function runSeed() {
   if (process.env.SEED_ENABLED !== "true") {
     console.log("Seed is disabled");
     process.exit(0);
@@ -16,7 +16,7 @@ async function main() {
   // ---------------------------
   // CHECK IF ALREADY SEEDED
   // ---------------------------
-  const serviceName = "events-service"; // nebo events-service podle projektu
+  const serviceName = "events-service";
 
   const already = await sql`
     SELECT 1 FROM seeding_log WHERE service = ${serviceName}
@@ -48,5 +48,3 @@ async function main() {
   console.log(`✔ Seed completed for ${serviceName}`);
   process.exit(0);
 }
-
-main();

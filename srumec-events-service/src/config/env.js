@@ -1,5 +1,5 @@
 export const config = {
-  rabbitUrl: process.env.RABBITMQ_URL ?? "amqp://guest:guest@localhost:5672",
+  rabbitUrl: `amqp://${process.env.RABBIT_USER}:${process.env.RABBIT_PASS}@${process.env.RABBIT_HOST}:5672`,
   eventsExchange: "events_exchange",
   expireExchange: "expire_exchange",
 };
