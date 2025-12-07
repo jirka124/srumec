@@ -184,7 +184,7 @@ export const fails = {
 
   vPCfnXmsiwLlZ5PI: {
     message: "Request failed policy check",
-    logLevel: LLOG_LEVELS.INFO,
+    logLevel: LOG_LEVELS.INFO,
     code: 403,
   },
   "2hzcG8oklWB568Ub": {
