@@ -2,26 +2,35 @@
 
 Tato mikroslužba se stará o registraci, přihlášení a správu uživatelů pro aplikaci **Šrumec**. Je postavena na frameworku **FastAPI** a běží v **Dockeru** společně s **PostgreSQL** databází.
 
-## Předpoklady
 
-Než začnete, ujistěte se, že máte na svém počítači nainstalované:
+## Testovací profily
 
-- **Docker**
-    
-- **Docker Compose**
-    
-
-## Instalace a První Spuštění
-
-Celý stack (aplikace i databáze) je kontejnerizován, takže zprovoznění je velmi jednoduché a vyžaduje jediný příkaz.
-
-**1. Klonování repozitáře**
-
-Bash
 
 ```
-git clone <URL_VAŠEHO_REPOZITÁŘE>
-cd srumec_auth
+{
+    "email": "admin@srumec.com",
+    "name": "Super Admin",                        HESLO: srumecpass
+    "id": "8b2a9bbd-c9b7-4edd-96bd-8b823d28f60b",
+    "role": "admin",
+    "banned": false,
+    "created_at": "2025-12-06T21:13:10.594130Z"
+  },
+  {
+    "email": "jdostal@srumec.com",
+    "name": "Jiří Dostál",                        HESLO: srumec
+    "id": "0ec2aa38-7899-4b31-bb0d-624764fcbb38",
+    "role": "user",
+    "banned": false,
+    "created_at": "2025-12-06T21:13:10.875216Z"
+  },
+  {
+    "email": "jzak@srumec.com",
+    "name": "Jiří Žák",                           HESLO: srumec
+    "id": "8778cd23-c681-4ce5-9057-82d439753753",
+    "role": "user",
+    "banned": false,
+    "created_at": "2025-12-06T21:13:11.131519Z"
+  }
 ```
 
 **2. Vytvoření konfiguračního souboru `.env`** Zkopírujte soubor `.env.example` (pokud ho máte) nebo vytvořte nový soubor s názvem `.env` v kořenovém adresáři projektu a vložte do něj následující obsah.

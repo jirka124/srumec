@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
+from contextlib import asynccontextmanager
 import os
 
 # Importy z tvých modulů
@@ -8,9 +9,39 @@ from core.config import settings
 from db.deps import get_db
 from api import auth_routes, user_routes
 
+import logging
+
+from db.init_db import init_db
+from db.session import SessionLocal
+
+# Nastavení logování
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+# --- LIFESPAN (Spouští se při startu a vypnutí) ---
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 1. Kód, který běží PŘED startem aplikace
+    logger.info("Starting up database seeding...")
+    db = SessionLocal()
+    try:
+        # Zavoláme náš seeder
+        init_db(db)
+    except Exception as e:
+        logger.error(f"Seeding failed: {e}")
+    finally:
+        db.close()
+
+    yield  # Tady aplikace běží a vyřizuje requesty
+
+    # 2. Kód, který běží PO vypnutí aplikace (cleanup)
+    logger.info("Shutting down...")
+
+
 # DŮLEŽITÉ: root_path="/auth" říká FastAPI, že běží za proxy s tímto prefixem.
 # Díky tomu bude Swagger UI správně generovat cesty (např. /auth/openapi.json).
-app = FastAPI(root_path="/auth")
+app = FastAPI(root_path="/auth", lifespan=lifespan)
 
 
 # --- ZDE PŘIDÁVÁM ENDPOINT PRO NGINX ---
