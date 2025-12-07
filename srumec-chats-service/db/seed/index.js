@@ -9,7 +9,7 @@ import { generateGroupRooms } from "./group/group-rooms.js";
 import { generateGroupMembers } from "./group/group-members.js";
 import { generateGroupMessages } from "./group/group-messages.js";
 
-async function main() {
+export async function runSeed() {
   if (process.env.SEED_ENABLED !== "true") {
     console.log("Seed disabled");
     process.exit(0);
@@ -21,7 +21,7 @@ async function main() {
   // ---------------------------
   // CHECK IF ALREADY SEEDED
   // ---------------------------
-  const serviceName = "chats-service"; // nebo events-service podle projektu
+  const serviceName = "chats-service";
 
   const already = await sql`
     SELECT 1 FROM seeding_log WHERE service = ${serviceName}
@@ -153,5 +153,3 @@ async function main() {
   console.log(`✔ Seed completed for ${serviceName}`);
   process.exit(0);
 }
-
-main();

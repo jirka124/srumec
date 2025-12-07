@@ -1,3 +1,4 @@
+-- Custom SQL migration file, put your code below! --
 -- ============================================
 --  srumec-chats-service – PostgreSQL INIT
 -- ============================================

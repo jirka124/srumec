@@ -1,6 +1,6 @@
 {
   "name": "srumec-chats-service",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "",
   "homepage": "https://github.com/jirka124/srumec-chats-service#readme",
   "bugs": {
@@ -18,7 +18,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "pm2-dev ecosystem.config.cjs",
     "start": "pm2-runtime ecosystem.config.cjs",
-    "db:seed": "node postgres-db/seed/index.js"
+    "db:init": "node db/seed/entrypoint.js",
+    "drizzle:local:migrate": "docker compose -f ../srumec-orchestration/docker-compose.yml -f ../srumec-orchestration/docker-compose.dev.yml exec chats-service npx drizzle-kit migrate --config=/app/drizzle.config.mts",
+    "drizzle:local:generate": "docker compose -f ../srumec-orchestration/docker-compose.yml -f ../srumec-orchestration/docker-compose.dev.yml exec chats-service npx drizzle-kit generate --custom --config=/app/drizzle.config.mts",
+    "drizzle:local:check": "docker compose -f ../srumec-orchestration/docker-compose.yml -f ../srumec-orchestration/docker-compose.dev.yml exec chats-service npx drizzle-kit check --config=/app/drizzle.config.mts"
   },
   "imports": {
     "#root/*": "./src/*",

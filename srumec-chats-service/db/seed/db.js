@@ -2,11 +2,11 @@ import postgres from "postgres";
 
 // read from ENV
 const {
-  SEED_HOST = "chats-postgres",
-  SEED_PORT = 5432,
-  SEED_USER,
-  SEED_PASSWORD,
-  SEED_DATABASE,
+  POSTGRES_HOST,
+  POSTGRES_PORT,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DB,
 } = process.env;
 
 export async function waitForDatabase({
@@ -21,11 +21,11 @@ export async function waitForDatabase({
       console.log(`DB healthcheck: attempt ${attempt}/${maxRetries}`);
 
       const temp = postgres({
-        host: SEED_HOST,
-        port: SEED_PORT,
-        username: SEED_USER,
-        password: SEED_PASSWORD,
-        database: SEED_DATABASE,
+        host: POSTGRES_HOST,
+        port: POSTGRES_PORT,
+        username: POSTGRES_USER,
+        password: POSTGRES_PASSWORD,
+        database: POSTGRES_DB,
       });
 
       await temp`SELECT 1`;
@@ -47,9 +47,9 @@ export async function waitForDatabase({
 }
 
 export const sql = postgres({
-  host: SEED_HOST,
-  port: SEED_PORT,
-  username: SEED_USER,
-  password: SEED_PASSWORD,
-  database: SEED_DATABASE,
+  host: POSTGRES_HOST,
+  port: POSTGRES_PORT,
+  username: POSTGRES_USER,
+  password: POSTGRES_PASSWORD,
+  database: POSTGRES_DB,
 });
