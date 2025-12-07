@@ -25,6 +25,27 @@ export const commentService = {
     return rows;
   },
 
+  async getOne({ id }) {
+    logger.info('Executing "getOne" service with params: ', { id });
+
+    const rows = await db.execute(sql`
+    SELECT
+      id,
+      event_ref,
+      user_ref,
+      user_name,
+      reply_to_ref,
+      content,
+      to_iso (create_time) AS create_time
+    FROM event_comments
+    WHERE id = ${id};
+  `);
+
+    logger.info('Executed "getOne" service with params: ', { id });
+
+    return rows[0] || null;
+  },
+
   async createOne(data) {
     logger.info('Executing "createOne" service with params: ', data);
 

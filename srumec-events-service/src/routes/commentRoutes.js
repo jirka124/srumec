@@ -4,6 +4,7 @@ import { validate } from "#middleware/validate.js";
 import { authUser } from "#middleware/auth-user.js";
 import {
   CommentGetAllReqSchema,
+  CommentGetOneReqSchema,
   CommentCreateReqSchema,
   CommentUpdateReqSchema,
   CommentDeleteReqSchema,
@@ -17,6 +18,11 @@ router.post(
   "/get-all",
   validate(CommentGetAllReqSchema),
   commentController.getAll
+);
+router.post(
+  "/get-one",
+  validate(CommentGetOneReqSchema),
+  commentController.getOne
 );
 router.post(
   "/create-one",

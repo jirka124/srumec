@@ -81,6 +81,15 @@ export const CommentGetAllReqSchema = z
     description: "Get all comments for an event",
   });
 
+export const CommentGetOneReqSchema = z
+  .object({
+    id: fields.id,
+  })
+  .meta({
+    id: "CommentGetOneReq",
+    description: "Get one comments of an event",
+  });
+
 export const CommentDeleteReqSchema = z
   .object({
     id: UUID,

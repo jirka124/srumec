@@ -1,4 +1,5 @@
 import { eventService } from "#services/eventService.js";
+import { policy as eventPolicy } from "#policies/event/policy.js";
 import { produceFail } from "#lib/fail/fail.js";
 
 export const eventController = {
@@ -26,6 +27,8 @@ export const eventController = {
 
   async getPending(req, res) {
     try {
+      eventPolicy.validateGetPending(req);
+
       const list = await eventService.getPendingEvents();
       res.json(list);
     } catch (e) {
@@ -52,8 +55,8 @@ export const eventController = {
 
   async createOne(req, res) {
     try {
-      const data = req.validated;
-      // TODO: only allow status and other from admin
+      let data = req.validated;
+      data = eventPolicy.validateCreate(req, data);
 
       const ev = await eventService.createEvent(data);
       res.json(ev);
@@ -64,8 +67,17 @@ export const eventController = {
 
   async updateOne(req, res) {
     try {
-      const data = req.validated;
-      // TODO: only allow status and other from admin
+      let data = req.validated;
+
+      const evs = await eventService.getEventById(data);
+      if (!evs) {
+        throw produceFail(
+          "JwhExzMzdJRiNDrH",
+          `Event with ID ${data.id} not found`
+        );
+      }
+
+      data = eventPolicy.validateUpdate(req, data, evs);
 
       const ev = await eventService.updateEvent(data);
       if (!ev) {
@@ -82,9 +94,19 @@ export const eventController = {
 
   async deleteOne(req, res) {
     try {
-      const data = req.validated;
+      let data = req.validated;
 
-      const count = await eventService.deleteEvent(data);
+      const ev = await eventService.getEventById(data);
+      if (!ev) {
+        throw produceFail(
+          "QjhXwq0MCPKu36L8",
+          `Event with ID ${data.id} not found`
+        );
+      }
+
+      eventPolicy.validateDelete(req, data, ev);
+
+      const count = await eventService.deleteEvent({ id: data.id });
       res.json({ count });
     } catch (e) {
       throw produceFail("TwlcQjNvJpEhfnLz", e);
