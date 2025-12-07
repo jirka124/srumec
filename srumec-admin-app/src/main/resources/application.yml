@@ -19,4 +19,4 @@ srumec:
 events-service:
   base-url: http://localhost:4000
   token: >-
-    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZmODllODNhLWFlZmEtNGVmNS05NGYzLTJhODllNmYyOTk5OSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNzY1MTA0MjM5fQ.yPGNlnNPbiSu-YHHcEiOGn-Gib2VecOaS92bOPyl4vQ
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNzA3MjM3LTEyNDUtNDE5OC1hNDExLWFjMmJjMTdiNTQwNyIsInJvbGUiOiJhZG1pbiIsIm5hbWUiOiJTdXBlciBBZG1pbiIsImV4cCI6MTc2NTMzODI4OH0.mtKur-OgWqsb4Eq11RjY_NIAzRY8ZRf_CwjooeH1YZA
