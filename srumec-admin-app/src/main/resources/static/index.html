@@ -1,60 +1,67 @@
 <!doctype html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Správce – testovací FE</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NXZBfNQZ0WwIgtl7mKpVtGfZ8q3j6u1R5QqY+4o8E=" crossorigin=""/>
-    <link rel="stylesheet" href="/css/styles.css"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Šrumec – Admin událostí</title>
+
+    <!-- Leaflet CSS -->
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NXZBfNQZ0WwIgtl7mKpVtGfZ8q3j6u1R5QqY+4o8E="
+            crossorigin=""
+    />
+
+    <!-- Naše CSS -->
+    <link rel="stylesheet" href="/css/admin.css" />
 </head>
+
 <body class="app">
+
 <header class="app-header">
     <div>
-        <h2 class="app-title">Správce – události & alerty (MVP)</h2>
-        <div class="muted">Volá BE: <code>/event</code>, <code>/event/{id}</code>, <code>POST /event/{id}</code>, <code>/api/alerts</code>, <code>POST /user/ban/{id}</code></div>
+        <h2 class="app-title">Šrumec – admin událostí</h2>
+        <div class="muted">
+            Volá BE:
+            <code>GET /admin/events/pending</code>,
+            <code>POST /admin/events/{id}/approve</code>,
+            <code>POST /admin/events/{id}/reject</code>
+        </div>
     </div>
-    <div class="header-actions">
-        <span class="muted">Auto-refresh: <code>10s</code></span>
-        <button class="btn ghost" onclick="refreshAll()">↻ Obnovit</button>
-        <form method="post" action="/logout"><button type="submit" class="btn danger">⎋ Odhlásit se</button></form>
-    </div>
+    <div class="muted" id="statusText">Načítám…</div>
 </header>
 
 <div class="wrap">
-    <!-- LEVÝ PANEL: EVENTY -->
+    <!-- LEVÝ PANEL: Seznam událostí -->
     <div class="card">
         <div class="row">
-            <strong>Události</strong>
+            <strong>Čekající události</strong>
             <div class="muted" id="eventsCount"></div>
         </div>
-        <div id="list" class="list">Načítám…</div>
+        <div id="eventsList" class="list">Načítám…</div>
     </div>
 
-    <!-- PRAVÝ PANEL: ALERTY + DETAIL + MAPA -->
+    <!-- PRAVÝ PANEL: Detail + mapa -->
     <div class="card">
-        <div class="cols">
-            <div>
-                <div class="row">
-                    <strong>Alerty (podezřelé)</strong>
-                    <div class="muted" id="alertsCount"></div>
-                </div>
-                <div id="alertsList" class="list list-small">Načítám…</div>
-            </div>
-            <div id="detailBox">
-                <div id="detail"><em>Vyber událost vlevo nebo klikni na alert.</em></div>
-                <div id="map" class="map"></div>
-            </div>
+        <strong>Detail události</strong>
+        <div id="detail">
+            <em>Vyber událost vlevo.</em>
         </div>
+        <div id="map"></div>
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+<!-- Leaflet JS -->
+<script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""></script>
+        crossorigin=""
+></script>
+
 <script>
     // Leaflet ikonky fallback
-    (function(){
+    (function () {
         const Icon = L.Icon.Default;
         Icon.mergeOptions({
             iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -64,158 +71,158 @@
     })();
 
     const api = {
-        listEvents: () => fetch('/event').then(r => r.json()),
-        getEvent: (id) => fetch(`/event/${id}`).then(r => r.json()),
-        decide: (id, approved) => fetch(`/event/${id}`, {
-            method: 'POST', headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ uuid:id, approved })
-        }),
-        listAlerts: () => fetch('/api/alerts').then(r => r.json()),
-        ban: (userId) => fetch(`/user/ban/${userId}`, { method:'POST' }),
+        listPending: () => fetch('/admin/events/pending').then(r => r.json()),
+        approve: (id) => fetch(`/admin/events/${id}/approve`, {method: 'POST'}),
+        reject: (id) => fetch(`/admin/events/${id}/reject`, {method: 'POST'})
     };
 
-    let state = { events:[], alerts:[], alertsByEventId:new Map(), selected:null, map:null, marker:null, timer:null };
 
-    async function refreshAll(){ await Promise.all([loadAlerts(), loadEvents()]); }
+    let state = {
+        events: [],
+        selectedId: null,
+        map: null,
+        marker: null
+    };
+
+    function setStatus(msg) {
+        document.getElementById('statusText').textContent = msg;
+    }
 
     async function loadEvents() {
+        setStatus('Načítám pending události…');
         try {
-            const data = await api.listEvents();
+            const data = await api.listPending();
             state.events = Array.isArray(data) ? data : [];
             document.getElementById('eventsCount').textContent = `${state.events.length} položek`;
             renderEventList();
-            if (state.selected) {
-                const updated = state.events.find(x => x.id === state.selected.id);
-                if (updated) selectEvent(updated.id); else clearDetail();
+            setStatus('Hotovo');
+
+            if (state.selectedId) {
+                const ev = state.events.find(e => e.id === state.selectedId);
+                if (ev) {
+                    renderDetail(ev);
+                    ensureMap(ev);
+                } else {
+                    clearDetail();
+                }
             }
         } catch (e) {
-            document.getElementById('list').innerHTML = '<div class="alert">Chyba při načítání /event</div>';
             console.error(e);
-        }
-    }
-
-    async function loadAlerts() {
-        try {
-            const data = await api.listAlerts();
-            state.alerts = Array.isArray(data) ? data : [];
-            document.getElementById('alertsCount').textContent = `${state.alerts.length} položek`;
-            state.alertsByEventId = new Map();
-            for (const a of state.alerts) if (a.eventId) state.alertsByEventId.set(a.eventId, a);
-            renderAlertsList();
-            renderEventList();
-        } catch (e) {
-            document.getElementById('alertsList').innerHTML = '<div class="alert">Chyba při načítání /api/alerts</div>';
-            console.error(e);
+            document.getElementById('eventsList').innerHTML =
+                '<div class="muted">Chyba při načítání /admin/events/pending</div>';
+            setStatus('Chyba při načítání');
         }
     }
 
     function renderEventList() {
-        const list = document.getElementById('list');
-        if (!state.events.length) { list.innerHTML = '<div class="muted">Žádné události v DB.</div>'; return; }
+        const list = document.getElementById('eventsList');
+        if (!state.events.length) {
+            list.innerHTML = '<div class="muted">Žádné události ke schválení.</div>';
+            return;
+        }
+
         list.innerHTML = state.events.map(e => {
-            const suspicious = state.alertsByEventId.has(e.id);
-            const badge = suspicious ? `<span class="badge">ALERT</span>` : '';
+            const selectedClass = e.id === state.selectedId ? 'selected' : '';
             return `
-        <div class="item ${suspicious ? 'danger' : ''}" onclick="selectEvent('${e.id}')">
-          <div><strong>${escapeHtml(e.nazev || '(bez názvu)')}</strong>${badge}</div>
-          <div class="muted">${escapeHtml(e.popis || '')}</div>
-        </div>`;
+            <div class="item ${selectedClass}" onclick="selectEvent('${e.id}')">
+                <div><strong>${escapeHtml(e.title || '(bez názvu)')}</strong></div>
+                <div class="muted">${escapeHtml(e.description || '')}</div>
+            </div>`;
         }).join('');
     }
 
-    function renderAlertsList() {
-        const box = document.getElementById('alertsList');
-        if (!state.alerts.length) { box.innerHTML = '<div class="muted">Žádné alerty.</div>'; return; }
-        box.innerHTML = state.alerts.map(a => `
-      <div class="item" onclick="openAlert('${a.id}')">
-        <div><strong>${escapeHtml(a.title || a.message || 'Alert')}</strong></div>
-        ${a.eventId ? `<div class="muted">event: <code>${a.eventId}</code></div>` : ''}
-      </div>`).join('');
-    }
-
-    async function openAlert(alertId) {
-        const a = state.alerts.find(x => x.id === alertId);
-        if (a && a.eventId) await selectEvent(a.eventId);
-        else alert('Alert nemá přiřazený eventId.');
-    }
-
-    async function selectEvent(id) {
-        try {
-            const ev = await api.getEvent(id);
-            state.selected = ev;
-            renderDetail(ev);
-            ensureMap(ev);
-        } catch (e) {
-            console.error(e);
-            alert('Nepodařilo se načíst detail události.');
-        }
+    function selectEvent(id) {
+        const ev = state.events.find(e => e.id === id);
+        if (!ev) return;
+        state.selectedId = id;
+        renderEventList();
+        renderDetail(ev);
+        ensureMap(ev);
     }
 
     function clearDetail() {
-        state.selected = null;
-        document.getElementById('detail').innerHTML = '<em>Vyber událost vlevo nebo klikni na alert.</em>';
-        if (state.marker && state.map) { state.map.removeLayer(state.marker); state.marker = null; }
+        state.selectedId = null;
+        document.getElementById('detail').innerHTML =
+            '<em>Vyber událost vlevo.</em>';
+        if (state.marker && state.map) {
+            state.map.removeLayer(state.marker);
+            state.marker = null;
+        }
     }
 
     function renderDetail(ev) {
-        const suspicious = state.alertsByEventId.has(ev.id);
-        const d = document.getElementById('detail');
-        d.innerHTML = `
-      <h3 class="detail-title">${escapeHtml(ev.nazev || '(bez názvu)')}${suspicious ? ' <span class="badge">ALERT</span>' : ''}</h3>
-      <div class="muted">ID: <code>${ev.id}</code></div>
-      <p>${escapeHtml(ev.popis || '')}</p>
-      <div>📍 Lat/Lng: <code>${ev.lat ?? '-'}</code> / <code>${ev.lng ?? '-'}</code></div>
-      <div>👤 Uživatel: <code>${ev.userId || '-'}</code></div>
-      <div class="btns">
-        <button class="btn success" onclick="onApprove('${ev.id}')">✅ Povolit</button>
-        <button class="btn danger" onclick="onDeny('${ev.id}')">❌ Zamítnout</button>
-        <button class="btn ghost" onclick="onBan('${ev.userId}')">⛔ Ban uživatele</button>
-      </div>`;
+        document.getElementById('detail').innerHTML = `
+        <h3 class="detail-title">${escapeHtml(ev.title || '(bez názvu)')}</h3>
+        <div class="muted">ID: <code>${ev.id}</code></div>
+        <p>${escapeHtml(ev.description || '')}</p>
+        <div>📍 Lat/Lng:
+            <code>${ev.latitude ?? '-'}</code> /
+            <code>${ev.longitude ?? '-'}</code>
+        </div>
+        <div>👤 Organizátor: <code>${ev.organizerRef || '-'}</code></div>
+        <div>🕒 Čas: <code>${ev.happenTime || '-'}</code></div>
+        <div>📌 Stav: <code>${ev.status || 'pending'}</code></div>
+
+        <div class="btns">
+            <button class="btn success" onclick="onApprove('${ev.id}')">Schválit</button>
+            <button class="btn danger" onclick="onReject('${ev.id}')">Zamítnout</button>
+        </div>
+        `;
     }
 
     async function onApprove(id) {
-        try { await api.decide(id, true); await refreshAll(); alert('Událost schválena (odesláno na srumec_events).'); }
-        catch (e) { console.error(e); alert('Schválení selhalo.'); }
+        if (!confirm('Opravdu schválit tuto událost?')) return;
+        await api.approve(id);
+        await loadEvents();
+        alert('Událost schválena.');
     }
 
-    async function onDeny(id) {
-        if (!confirm('Opravdu zamítnout a smazat tuto událost?')) return;
-        try { await api.decide(id, false); await refreshAll(); alert('Událost zamítnuta a smazána.'); }
-        catch (e) { console.error(e); alert('Zamítnutí selhalo.'); }
-    }
-
-    async function onBan(userId) {
-        if (!userId) { alert('Chybí userId'); return; }
-        if (!confirm('Opravdu zabanovat tohoto uživatele?')) return;
-        try { await api.ban(userId); alert('Uživatel zabanován (odesláno na srumec_users).'); }
-        catch (e) { console.error(e); alert('Ban se nepodařil.'); }
+    async function onReject(id) {
+        if (!confirm('Opravdu zamítnout tuto událost?')) return;
+        await api.reject(id);
+        await loadEvents();
+        alert('Událost zamítnuta.');
     }
 
     function ensureMap(ev) {
-        const lat = Number(ev.lat), lng = Number(ev.lng);
+        const lat = Number(ev.latitude);
+        const lng = Number(ev.longitude);
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
         if (!state.map) {
-            state.map = L.map('map', { zoomControl: true }).setView([lat, lng], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(state.map);
+            state.map = L.map('map').setView([lat, lng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(state.map);
         } else {
-            state.map.setView([lat, lng], state.map.getZoom() || 13, { animate: true });
+            state.map.setView([lat, lng]);
         }
 
         if (state.marker) state.map.removeLayer(state.marker);
-        state.marker = L.marker([lat, lng]).addTo(state.map).bindPopup(ev.nazev || 'Událost');
-
-        requestAnimationFrame(() => state.map.invalidateSize(true));
-        setTimeout(() => state.map.invalidateSize(true), 150);
+        state.marker = L.marker([lat, lng]).addTo(state.map);
     }
 
     function escapeHtml(s) {
-        return (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+        return (s ?? '').toString().replace(/[&<>"']/g, c => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[c]));
     }
 
-    window.addEventListener('resize', () => { if (state.map) state.map.invalidateSize(true); });
-    refreshAll();
-    state.timer = setInterval(refreshAll, 10000);
+    window.onApprove = onApprove;
+    window.onReject = onReject;
+    window.selectEvent = selectEvent;
+
+    window.addEventListener('resize', () => {
+        if (state.map) state.map.invalidateSize(true);
+    });
+
+    loadEvents();
+    setInterval(loadEvents, 10000);
 </script>
+
 </body>
 </html>
