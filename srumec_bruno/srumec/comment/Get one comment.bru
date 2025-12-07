@@ -1,11 +1,11 @@
 meta {
-  name: Delete comment
+  name: Get one comment
   type: http
-  seq: 5
+  seq: 2
 }
 
 post {
-  url: http://localhost:8000/v1/comments/delete-one
+  url: http://localhost:8000/v1/comments/get-one
   body: json
   auth: bearer
 }
@@ -16,7 +16,7 @@ auth:bearer {
 
 body:json {
   {
-    "id": "f49a25e2-28fc-46cc-bb34-024addccc634"
+    "id": "075b3468-7a8b-48e3-a179-3185c326fb6a"
   }
 }
 
