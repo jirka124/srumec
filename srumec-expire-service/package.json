@@ -1,6 +1,6 @@
 {
   "name": "srumec-expire-service",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Expire service for Šrumec (MOIS) using Redis TTL and RabbitMQ",
   "type": "module",
   "main": "src/index.js",
@@ -17,7 +17,7 @@
     "#lib/*": "./src/lib/*"
   },
   "dependencies": {
-    "@srumec/rabbitmq-client": "^0.0.9",
+    "@srumec/rabbitmq-client": "^0.0.10",
     "redis": "^4.6.13"
   }
 }

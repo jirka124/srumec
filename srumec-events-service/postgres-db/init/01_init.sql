@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS events (
   description VARCHAR(512) DEFAULT NULL,
   location GEOGRAPHY(Point, 4326) NOT NULL,
   happen_time TIMESTAMPTZ NOT NULL,
-  status event_approve_state_type NOT NULL DEFAULT 'pending'
+  status event_approve_state_type NOT NULL DEFAULT 'approved'
 );
 
 -- COMMENTS
@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS event_comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   event_ref UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
   user_ref UUID NOT NULL,
+  user_name TEXT NULL,
   reply_to_ref UUID NULL REFERENCES event_comments(id) ON DELETE SET NULL,
   content TEXT NOT NULL,
   create_time TIMESTAMPTZ NOT NULL DEFAULT NOW()

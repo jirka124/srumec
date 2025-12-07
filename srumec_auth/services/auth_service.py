@@ -64,7 +64,8 @@ def create_user(db: Session, user: user_schema.UserCreate):
 
     db_user = user_model.User(
         email=user.email.__str__(),
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
+        name=user.name
     )
 
     db.add(db_user)

@@ -1,6 +1,7 @@
 import { db } from "#root/config/db.js";
 import { sql } from "drizzle-orm";
 import { logger } from "#lib/log/log.js";
+import { publishChatMessageCreated } from "#messaging/publisher.js";
 
 export const service = {
   async getAllDirectMessages({ room_ref }) {
@@ -26,10 +27,9 @@ export const service = {
     return rows;
   },
 
-  async getOneDirectMessage({ id, room_ref }) {
+  async getOneDirectMessage({ id }) {
     logger.info('Executing "getOneDirectMessage" service with params:', {
       id,
-      room_ref,
     });
 
     const rows = await db.execute(sql`
@@ -41,13 +41,11 @@ export const service = {
       to_iso(sent_time) AS sent_time
     FROM chat_message
     WHERE id = ${id}
-      AND room_ref = ${room_ref}
       AND type = 'direct';
   `);
 
     logger.info('Executing "getOneDirectMessage" service with params:', {
       id,
-      room_ref,
     });
 
     return rows[0] ?? null;
@@ -96,6 +94,8 @@ export const service = {
       message,
       to_iso(sent_time) AS sent_time;
   `);
+
+    publishChatMessageCreated({ ...result[0], type: "direct" });
 
     logger.info('Executed "createDirectMessage" service with params: ', msg);
 

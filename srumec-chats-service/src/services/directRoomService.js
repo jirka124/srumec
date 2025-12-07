@@ -47,17 +47,9 @@ export const service = {
   async createOneDirectRoom(room) {
     logger.info('Executing "createOneDirectRoom" service with params: ', room);
 
-    const columns = [];
-    const values = [];
+    const columns = ["user_1_ref", "user_2_ref"];
+    const values = [room.user_1_ref, room.user_2_ref];
 
-    // required
-    columns.push("user_1_ref");
-    values.push(room.user_1_ref);
-
-    columns.push("user_2_ref");
-    values.push(room.user_2_ref);
-
-    // optional
     if (room.id !== undefined) {
       columns.push("id");
       values.push(room.id);
@@ -74,6 +66,11 @@ export const service = {
     const result = await db.execute(sql`
     INSERT INTO chat_room_direct (${csql})
     VALUES (${vsql})
+
+    -- pokud existuje normalized_pair → vrať existující záznam
+    ON CONFLICT (normalized_pair) DO UPDATE SET
+      user_1_ref = chat_room_direct.user_1_ref
+
     RETURNING
       id,
       user_1_ref,

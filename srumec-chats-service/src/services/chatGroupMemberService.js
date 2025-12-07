@@ -9,7 +9,7 @@ export const service = {
     });
 
     const rows = await db.execute(sql`
-    SELECT group_ref, user_ref, role, member_since
+    SELECT group_ref, user_ref, role, to_iso(member_since) AS member_since
     FROM chat_room_group_member
     WHERE group_ref = ${group_ref};
   `);
@@ -19,6 +19,31 @@ export const service = {
     });
 
     return rows;
+  },
+
+  async getMember({ group_ref, user_ref }) {
+    logger.info('Executing "getMember" service with params:', {
+      group_ref,
+      user_ref,
+    });
+
+    const rows = await db.execute(sql`
+    SELECT 
+      group_ref,
+      user_ref,
+      role,
+      to_iso(member_since) AS member_since
+    FROM chat_room_group_member
+    WHERE group_ref = ${group_ref}
+      AND user_ref = ${user_ref};
+  `);
+
+    logger.info('Executed "getMember" service with params:', {
+      group_ref,
+      user_ref,
+    });
+
+    return rows[0] ?? null;
   },
 
   async createMember(member) {

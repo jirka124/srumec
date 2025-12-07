@@ -106,6 +106,11 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  JwhExzMzdJRiNDrH: {
+    message: "Failed to update event",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
+  },
   "8sNY4yBPBmlQdV2n": {
     message: "Failed to update event",
     logLevel: LOG_LEVELS.INFO,
@@ -121,8 +126,23 @@ export const fails = {
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
+  QjhXwq0MCPKu36L8: {
+    message: "Failed to delete event",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
+  },
   uzgMMFIN6JCaB7ER: {
     message: "Failed to fetch comments",
+    logLevel: LOG_LEVELS.ERROR,
+    code: 500,
+  },
+  D2sdXWgw3AcgTuiC: {
+    message: "Failed to fetch comment",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
+  },
+  bQZDS7VrdVUhETa9: {
+    message: "Failed to fetch comment",
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
   },
@@ -136,10 +156,20 @@ export const fails = {
     logLevel: LOG_LEVELS.INFO,
     code: 404,
   },
+  F3hmSSsCoP4xsOVO: {
+    message: "Failed to update comment",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
+  },
   ZZu4ghBUlxie7YA5: {
     message: "Failed to update comment",
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
+  },
+  i2CezSCBpg9PO6F3: {
+    message: "Failed to delete comment",
+    logLevel: LOG_LEVELS.INFO,
+    code: 404,
   },
   LgG6bt5I163ufpmi: {
     message: "Failed to delete comment",
@@ -150,6 +180,62 @@ export const fails = {
     message: "Failed to delete expired event",
     logLevel: LOG_LEVELS.ERROR,
     code: 500,
+  },
+
+  vPCfnXmsiwLlZ5PI: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  "2hzcG8oklWB568Ub": {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  fUJ6nWaUeOVZCW5F: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  MmsjudGgcjhKPL3k: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  gHPKiJPG30SkBEr9: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  gvSh2EPNekZNX8R4: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  eat8rREklgttGCQ7: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  RjuWiE3soHyRYi5m: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  NJKiZkKzMvFtHJGv: {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  "8iZ0tCyXlIiuu02O": {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
+  },
+  "8QRfcIGlSh1wpuZz": {
+    message: "Request failed policy check",
+    logLevel: LOG_LEVELS.INFO,
+    code: 403,
   },
 };
 

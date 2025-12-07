@@ -11,6 +11,10 @@ export const fields = {
     description: "User who created the comment",
     example: "a34f1cc4-7dc0-4f0e-85bb-bcd660df3b11",
   }),
+  user_name: z.string().nullable().meta({
+    description: "User who created the comment",
+    example: "Alice Cooper",
+  }),
   reply_to_ref: UUID.nullable().meta({
     description: "Parent comment (if this is a reply)",
     examples: ["a34f1cc4-7dc0-4f0e-85bb-bcd660df3b11", null],
@@ -30,6 +34,7 @@ export const CommentSchema = z
     id: fields.id,
     event_ref: fields.event_ref,
     user_ref: fields.user_ref,
+    user_name: fields.user_name,
     reply_to_ref: fields.reply_to_ref,
     content: fields.content,
     create_time: fields.create_time,
@@ -74,6 +79,15 @@ export const CommentGetAllReqSchema = z
   .meta({
     id: "CommentGetAllReq",
     description: "Get all comments for an event",
+  });
+
+export const CommentGetOneReqSchema = z
+  .object({
+    id: fields.id,
+  })
+  .meta({
+    id: "CommentGetOneReq",
+    description: "Get one comments of an event",
   });
 
 export const CommentDeleteReqSchema = z

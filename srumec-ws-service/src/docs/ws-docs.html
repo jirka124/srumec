@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Šrumec – WebSocket API Docs</title>
+
+    <!-- jednoduchý styling bez externích souborů -->
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Arial, sans-serif;
+        background: #fafafa;
+        padding: 20px 40px;
+        max-width: 960px;
+        margin: auto;
+        line-height: 1.6;
+        color: #222;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #333;
+      }
+
+      /* INLINE CODE */
+      code {
+        background: #f4f4f4;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 14px;
+        color: #d63384; /* stylově zvýrazněné inline hodnoty */
+      }
+
+      /* MULTILINE CODE BLOCKS */
+      pre {
+        background: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        color: #222;
+        padding: 14px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 14px;
+        font-family: Consolas, Monaco, monospace;
+        line-height: 1.45;
+      }
+
+      .box {
+        background: white;
+        padding: 18px;
+        border-radius: 6px;
+        margin-bottom: 26px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      }
+
+      .msg {
+        font-weight: bold;
+        color: #0d6efd;
+        margin-top: 16px;
+      }
+
+      button {
+        padding: 8px 16px;
+        margin-right: 10px;
+        font-size: 14px;
+        background: #0d6efd;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0b5ed7;
+      }
+
+      #log {
+        min-height: 100px;
+        margin-top: 12px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Šrumec – WebSocket API Dokumentace</h1>
+    <p>
+      Toto je ručně psaná jednoduchá dokumentace pro WebSocket API používané ve
+      <b>ws-service</b>.
+    </p>
+
+    <hr />
+
+    <div class="box">
+      <h2>📡 Jak vytvořit WebSocket připojení</h2>
+
+      <p>Připojení se provádí na:</p>
+      <pre><code>ws://localhost:8000/ws?token={{token}}</code></pre>
+
+      <p>Ukázkový JavaScript kód:</p>
+      <pre><code>
+const token = "JWT_TOKEN"
+const socket = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
+
+socket.onopen = () => {
+  console.log("WS connected");
+};
+
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log("Received:", data);
+};
+
+socket.onerror = (err) => console.error("WS error:", err);
+  </code></pre>
+    </div>
+
+    <div class="box">
+      <h2>📥 Zprávy přijímané od serveru</h2>
+      <p>Server posílá zprávy sjednoceným formátem:</p>
+
+      <pre><code>{
+  "event": "název.události",
+  "data": { ...obsah_události... }
+}</code></pre>
+
+      <style>
+        .toggle-header {
+          cursor: pointer;
+          padding: 6px 0;
+          user-select: none;
+          color: #0d6efd;
+        }
+        .toggle-header:hover {
+          text-decoration: underline;
+        }
+
+        .toggle-content {
+          display: none;
+          margin: 10px 0 20px 0;
+        }
+      </style>
+
+      <script>
+        function toggle(id) {
+          const el = document.getElementById(id);
+          el.style.display = el.style.display === "block" ? "none" : "block";
+        }
+      </script>
+
+      <hr />
+
+      <!-- chat.message.created -->
+      <h3 class="toggle-header" onclick="toggle('msg_chat_created')">
+        ▶ chat.message.created
+      </h3>
+      <div id="msg_chat_created" class="toggle-content">
+        <pre><code>{
+  "event": "chat.message.created",
+  "data": {
+    "id": "string",
+    "room_ref": "string",
+    "msg_type": "direct | group"
+  }
+}</code></pre>
+
+        <strong>Příklad:</strong>
+        <pre><code>{
+  "event": "chat.message.created",
+  "data": {
+    "id": "abccb7db-82f2-4420-9fb2-5601b089eefe",
+    "room_ref": "direct_12_55",
+    "msg_type": "direct"
+  }
+}</code></pre>
+      </div>
+
+      <hr />
+
+      <!-- event.created -->
+      <h3 class="toggle-header" onclick="toggle('msg_event_created')">
+        ▶ event.created
+      </h3>
+      <div id="msg_event_created" class="toggle-content">
+        <pre><code>{
+  "event": "event.created",
+  "data": {
+    "id": "string",
+    "lat": number,
+    "long": number,
+    "organizer_ref": "string"
+  }
+}</code></pre>
+
+        <strong>Příklad:</strong>
+        <pre><code>{
+  "event": "event.created",
+  "data": {
+    "id": "abccb7db-82f2-4420-9fb2-5601b089eefe",
+    "lat": 50.087,
+    "long": 14.42,
+    "organizer_ref": "16e2075e-8893-49d1-869a-7864e536880d"
+  }
+}</code></pre>
+      </div>
+
+      <hr />
+
+      <!-- event.updated -->
+      <h3 class="toggle-header" onclick="toggle('msg_event_updated')">
+        ▶ event.updated
+      </h3>
+      <div id="msg_event_updated" class="toggle-content">
+        <pre><code>{
+  "event": "event.updated",
+  "data": {
+    "id": "string",
+    "lat": number,
+    "long": number,
+    "organizer_ref": "string"
+  }
+}</code></pre>
+
+        <strong>Příklad:</strong>
+        <pre><code>{
+  "event": "event.updated",
+  "data": {
+    "id": "abccb7db-82f2-4420-9fb2-5601b089eefe",
+    "lat": 50.088,
+    "long": 14.4209,
+    "organizer_ref": "16e2075e-8893-49d1-869a-7864e536880d"
+  }
+}</code></pre>
+      </div>
+
+      <hr />
+
+      <!-- event.deleted -->
+      <h3 class="toggle-header" onclick="toggle('msg_event_deleted')">
+        ▶ event.deleted
+      </h3>
+      <div id="msg_event_deleted" class="toggle-content">
+        <pre><code>{
+  "event": "event.deleted",
+  "data": {
+    "id": "string"
+  }
+}</code></pre>
+
+        <strong>Příklad:</strong>
+        <pre><code>{
+  "event": "event.deleted",
+  "data": {
+    "id": "abccb7db-82f2-4420-9fb2-5601b089eefe"
+  }
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>🧪 Testovací konzole (přímo v dokumentaci)</h2>
+
+      <p>Zadejte JWT token, který bude použit v připojovací URL:</p>
+
+      <input
+        id="tokenInput"
+        type="text"
+        placeholder="Zadejte JWT token"
+        style="width: 100%; padding: 8px; margin-bottom: 10px; font-size: 14px"
+      />
+
+      <button id="btnConnect">Připojit WS</button>
+
+      <pre id="log"></pre>
+
+      <script>
+        let ws = null;
+
+        const log = (msg) => {
+          const el = document.getElementById("log");
+          el.textContent += msg + "\\n";
+        };
+
+        document.getElementById("btnConnect").onclick = () => {
+          const token = document.getElementById("tokenInput").value.trim();
+
+          if (!token) {
+            return log("⛔ Zadejte prosím JWT token.");
+          }
+
+          const url = `ws://localhost:8000/ws?token=${token}`;
+          log("🔌 Connecting to: " + url);
+
+          ws = new WebSocket(url);
+
+          ws.onopen = () => log("✅ WS connected");
+          ws.onmessage = (e) => log("📥 RECV: " + e.data);
+          ws.onerror = (e) => log("❌ ERROR: " + e);
+          ws.onclose = () => log("🔌 WS closed");
+        };
+      </script>
+    </div>
+
+    <hr />
+
+    <p style="text-align: center; color: #777">
+      Šrumec – WebSocket API (simple manual docs)
+    </p>
+  </body>
+</html>

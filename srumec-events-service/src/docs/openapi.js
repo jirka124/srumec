@@ -14,6 +14,7 @@ import {
   CommentCreateReqSchema,
   CommentUpdateReqSchema,
   CommentGetAllReqSchema,
+  CommentGetOneReqSchema,
   CommentDeleteReqSchema,
 } from "#validators/commentSchemas.js";
 
@@ -21,6 +22,7 @@ const defaultResponse = (code) => {
   let description = null;
   if (code === 400) description = "Invalid request";
   else if (code === 401) description = "Unauthorized";
+  else if (code === 403) description = "Forbidden";
   else if (code === 404) description = "Not Found";
   else if (code === 500) description = "Internal Server Error";
   else throw new Error("Unknown response code");
@@ -81,6 +83,7 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },
@@ -110,6 +113,7 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -139,6 +143,7 @@ export function generateOpenApiSpec() {
             ...defaultResponse(400),
             ...defaultResponse(401),
             ...defaultResponse(404),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },
@@ -166,6 +171,7 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },
@@ -186,6 +192,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },
@@ -205,6 +212,7 @@ export function generateOpenApiSpec() {
               },
             },
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },
@@ -232,6 +240,7 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },
@@ -260,6 +269,36 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
+            ...defaultResponse(500),
+          },
+        },
+      },
+
+      "/v1/comments/get-one": {
+        post: {
+          summary: "Get one comment of an event",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: CommentGetOneReqSchema,
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "comment with given id",
+              content: {
+                "application/json": {
+                  schema: CommentSchema,
+                },
+              },
+            },
+            ...defaultResponse(400),
+            ...defaultResponse(401),
+            ...defaultResponse(403),
+            ...defaultResponse(404),
             ...defaultResponse(500),
           },
         },
@@ -287,6 +326,7 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },
@@ -314,6 +354,7 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(404),
             ...defaultResponse(500),
           },
@@ -342,6 +383,7 @@ export function generateOpenApiSpec() {
             },
             ...defaultResponse(400),
             ...defaultResponse(401),
+            ...defaultResponse(403),
             ...defaultResponse(500),
           },
         },

@@ -1,6 +1,6 @@
 {
   "name": "srumec-chats-service",
-  "version": "0.0.6",
+  "version": "0.0.11",
   "description": "",
   "homepage": "https://github.com/jirka124/srumec-chats-service#readme",
   "bugs": {
@@ -28,9 +28,12 @@
     "#routes/*": "./src/routes/*",
     "#lib/*": "./src/lib/*",
     "#middleware/*": "./src/middleware/*",
-    "#validators/*": "./src/validators/*"
+    "#validators/*": "./src/validators/*",
+    "#messaging/*": "./src/messaging/*",
+    "#policies/*": "./src/policies/*"
   },
   "dependencies": {
+    "@srumec/rabbitmq-client": "^0.0.10",
     "drizzle-kit": "^0.31.7",
     "drizzle-orm": "^0.44.7",
     "express": "^4.18.2",

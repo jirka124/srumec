@@ -54,7 +54,6 @@ export const GetAllMessagesRes = z.array(ChatMessageSchema);
 
 export const GetOneMessageReq = z.object({
   id: fields.id,
-  room_ref: fields.room_ref,
 });
 export const GetOneMessageRes = ChatMessageSchema;
 

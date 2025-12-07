@@ -76,6 +76,7 @@ export default async function seedComments(sql) {
           id,
           event_ref,
           user_ref,
+          user_name,
           reply_to_ref,
           content,
           create_time
@@ -84,6 +85,20 @@ export default async function seedComments(sql) {
           ${id},
           ${ev.id},
           ${randomUUID()},
+          ${
+            [
+              "ShadowFox",
+              "LunarByte",
+              "PixelWolf",
+              "NeonRider",
+              "DarkNova",
+              "GhostSpark",
+              "IronPulse",
+              "StormByte",
+              "CyberHawk",
+              "SilentBlade",
+            ][Math.floor(Math.random() * 10)]
+          },
           ${replyTo},
           ${"This is an auto-generated test comment."},
           ${createTimeExpr}

@@ -29,9 +29,12 @@ CREATE TABLE chat_room_direct (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_1_ref UUID NOT NULL,
     user_2_ref UUID NOT NULL,
+    normalized_pair TEXT NOT NULL,
     create_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT chk_users_distinct CHECK (user_1_ref <> user_2_ref)
+    CONSTRAINT chk_users_distinct CHECK (user_1_ref <> user_2_ref),
+
+    CONSTRAINT uniq_direct_normalized_pair UNIQUE (normalized_pair)
 );
 
 -- Indexy
@@ -78,6 +81,28 @@ CREATE TABLE chat_message (
     sent_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     type chat_room_type NOT NULL
 );
+
+-- ============================================
+-- TRIGGER – automaticky vypočítá normalized_pair
+-- ============================================
+
+CREATE OR REPLACE FUNCTION compute_normalized_pair()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Normalizace dvojice: vždy abecedně
+    NEW.normalized_pair :=
+        LEAST(NEW.user_1_ref::text, NEW.user_2_ref::text)
+        || '::' ||
+        GREATEST(NEW.user_1_ref::text, NEW.user_2_ref::text);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_compute_normalized_pair
+BEFORE INSERT ON chat_room_direct
+FOR EACH ROW
+EXECUTE FUNCTION compute_normalized_pair();
 
 -- Indexy
 CREATE INDEX idx_chat_message_room ON chat_message(room_ref);

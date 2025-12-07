@@ -1,0 +1,26 @@
+meta {
+  name: Get one comment
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/v1/comments/get-one
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "id": "075b3468-7a8b-48e3-a179-3185c326fb6a"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

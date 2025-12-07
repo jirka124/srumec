@@ -51,6 +51,8 @@ services:
       - /app/node_modules
     env_file:
       - ../srumec-ws-service/.env.dev
+    ports:
+      - '4004:4001'
 
   users-service:
     ports:

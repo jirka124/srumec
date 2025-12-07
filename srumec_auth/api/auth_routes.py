@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Depends, status, HTTPException, Request
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
-from jose import JWTError, jwt
-from core.config import settings
 from schemas import user_schema
 from services import auth_service
 from db.deps import get_db
@@ -10,7 +8,7 @@ router = APIRouter()
 
 @router.post(
     "/register",
-    response_model=user_schema.User,
+    response_model=user_schema.UserResponse,  # <--- ZDE BYLA CHYBA (bylo tam .User)
     status_code=status.HTTP_201_CREATED
 )
 async def create_user(
@@ -19,9 +17,6 @@ async def create_user(
 ):
     """
     Endpoint pro registraci nového uživatele.
-    - Přijme data odpovídající schématu UserCreate.
-    - Zavolá servisní logiku pro vytvoření uživatele.
-    - Vrátí data odpovídající schématu User (bez hesla).
     """
     return auth_service.create_user(db=db, user=user)
 
@@ -43,9 +38,11 @@ async def login_for_access_token(
         )
 
     token_payload = {
-        "id": str(user.id),  # Důležité: UUID musíte převést na string!
-        "role": user.role  # Přidání role (např. "admin" nebo "user")
+        "id": str(user.id),
+        "role": user.role,
+        "name": user.name,
     }
     access_token = auth_service.create_access_token(data=token_payload)
 
+    # Vrátíme user objekt, Pydantic (LoginResponse -> UserResponse) si ho převede
     return {"access_token": access_token, "token_type": "bearer", "user": user}
