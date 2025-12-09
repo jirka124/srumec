@@ -5,16 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Šrumec – Admin událostí</title>
 
-    <!-- Leaflet CSS -->
-    <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-            integrity="sha256-p4NXZBfNQZ0WwIgtl7mKpVtGfZ8q3j6u1R5QqY+4o8E="
-            crossorigin=""
-    />
-
-    <!-- Naše CSS -->
-    <link rel="stylesheet" href="/css/admin.css" />
+    <!-- Leaflet CSS UŽ NEPOTŘEBUJEME -->
+    <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
 <body class="app">
@@ -33,7 +25,7 @@
 </header>
 
 <div class="wrap">
-    <!-- LEVÝ PANEL: Seznam událostí -->
+    <!-- LEVÝ PANEL -->
     <div class="card">
         <div class="row">
             <strong>Čekající události</strong>
@@ -42,46 +34,32 @@
         <div id="eventsList" class="list">Načítám…</div>
     </div>
 
-    <!-- PRAVÝ PANEL: Detail + mapa -->
+    <!-- PRAVÝ PANEL -->
     <div class="card">
         <strong>Detail události</strong>
         <div id="detail">
             <em>Vyber událost vlevo.</em>
         </div>
-        <div id="map"></div>
+
+        <!-- Interaktivní OpenStreetMap v iframe -->
+        <iframe
+                id="mapFrame"
+                title="Mapa místa události"
+                loading="lazy"
+        ></iframe>
     </div>
 </div>
 
-<!-- Leaflet JS -->
-<script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""
-></script>
-
 <script>
-    // Leaflet ikonky fallback
-    (function () {
-        const Icon = L.Icon.Default;
-        Icon.mergeOptions({
-            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
-        });
-    })();
-
     const api = {
         listPending: () => fetch('/admin/events/pending').then(r => r.json()),
-        approve: (id) => fetch(`/admin/events/${id}/approve`, {method: 'POST'}),
-        reject: (id) => fetch(`/admin/events/${id}/reject`, {method: 'POST'})
+        approve: id => fetch(`/admin/events/${id}/approve`, {method: 'POST'}),
+        reject: id => fetch(`/admin/events/${id}/reject`, {method: 'POST'})
     };
-
 
     let state = {
         events: [],
-        selectedId: null,
-        map: null,
-        marker: null
+        selectedId: null
     };
 
     function setStatus(msg) {
@@ -93,7 +71,8 @@
         try {
             const data = await api.listPending();
             state.events = Array.isArray(data) ? data : [];
-            document.getElementById('eventsCount').textContent = `${state.events.length} položek`;
+            document.getElementById('eventsCount').textContent =
+                `${state.events.length} položek`;
             renderEventList();
             setStatus('Hotovo');
 
@@ -102,8 +81,6 @@
                 if (ev) {
                     renderDetail(ev);
                     ensureMap(ev);
-                } else {
-                    clearDetail();
                 }
             }
         } catch (e) {
@@ -121,14 +98,15 @@
             return;
         }
 
-        list.innerHTML = state.events.map(e => {
-            const selectedClass = e.id === state.selectedId ? 'selected' : '';
-            return `
-            <div class="item ${selectedClass}" onclick="selectEvent('${e.id}')">
+        list.innerHTML = state.events
+            .map(e => `
+            <div class="item ${e.id === state.selectedId ? "selected" : ""}"
+                 onclick="selectEvent('${e.id}')">
                 <div><strong>${escapeHtml(e.title || '(bez názvu)')}</strong></div>
                 <div class="muted">${escapeHtml(e.description || '')}</div>
-            </div>`;
-        }).join('');
+            </div>
+        `)
+            .join('');
     }
 
     function selectEvent(id) {
@@ -140,85 +118,78 @@
         ensureMap(ev);
     }
 
-    function clearDetail() {
-        state.selectedId = null;
-        document.getElementById('detail').innerHTML =
-            '<em>Vyber událost vlevo.</em>';
-        if (state.marker && state.map) {
-            state.map.removeLayer(state.marker);
-            state.marker = null;
-        }
-    }
-
     function renderDetail(ev) {
         document.getElementById('detail').innerHTML = `
-        <h3 class="detail-title">${escapeHtml(ev.title || '(bez názvu)')}</h3>
-        <div class="muted">ID: <code>${ev.id}</code></div>
-        <p>${escapeHtml(ev.description || '')}</p>
-        <div>📍 Lat/Lng:
-            <code>${ev.latitude ?? '-'}</code> /
-            <code>${ev.longitude ?? '-'}</code>
-        </div>
-        <div>👤 Organizátor: <code>${ev.organizerRef || '-'}</code></div>
-        <div>🕒 Čas: <code>${ev.happenTime || '-'}</code></div>
-        <div>📌 Stav: <code>${ev.status || 'pending'}</code></div>
-
-        <div class="btns">
-            <button class="btn success" onclick="onApprove('${ev.id}')">Schválit</button>
-            <button class="btn danger" onclick="onReject('${ev.id}')">Zamítnout</button>
-        </div>
+            <h3 class="detail-title">${escapeHtml(ev.title || '(bez názvu)')}</h3>
+            <div class="muted">ID: <code>${ev.id}</code></div>
+            <p>${escapeHtml(ev.description || '')}</p>
+            <div>📍 Lat/Lng: <code>${ev.latitude ?? '-'}</code> / <code>${ev.longitude ?? '-'}</code></div>
+            <div>👤 Organizátor: <code>${ev.organizerRef || '-'}</code></div>
+            <div>🕒 Čas: <code>${ev.happenTime || '-'}</code></div>
+            <div>📌 Stav: <code>${ev.status || 'pending'}</code></div>
+            <div class="btns">
+                <button class="btn success" onclick="onApprove('${ev.id}')">Schválit</button>
+                <button class="btn danger" onclick="onReject('${ev.id}')">Zamítnout</button>
+            </div>
         `;
     }
 
     async function onApprove(id) {
-        if (!confirm('Opravdu schválit tuto událost?')) return;
+        if (!confirm('Opravdu schválit?')) return;
         await api.approve(id);
         await loadEvents();
         alert('Událost schválena.');
     }
 
     async function onReject(id) {
-        if (!confirm('Opravdu zamítnout tuto událost?')) return;
+        if (!confirm('Opravdu zamítnout?')) return;
         await api.reject(id);
         await loadEvents();
         alert('Událost zamítnuta.');
     }
 
+    // Interaktivní OpenStreetMap v iframe
     function ensureMap(ev) {
         const lat = Number(ev.latitude);
         const lng = Number(ev.longitude);
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+        const iframe = document.getElementById('mapFrame');
 
-        if (!state.map) {
-            state.map = L.map('map').setView([lat, lng], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap'
-            }).addTo(state.map);
-        } else {
-            state.map.setView([lat, lng]);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            iframe.src = '';
+            iframe.title = 'Mapa není k dispozici (chybí souřadnice)';
+            return;
         }
 
-        if (state.marker) state.map.removeLayer(state.marker);
-        state.marker = L.marker([lat, lng]).addTo(state.map);
+        const zoom = 14;
+        const delta = 0.02; // velikost bboxu kolem bodu
+
+        const left = lng - delta;
+        const right = lng + delta;
+        const bottom = lat - delta;
+        const top = lat + delta;
+
+        const bbox = `${left},${bottom},${right},${top}`;
+        const marker = `${lat},${lng}`;
+
+        const url =
+            `https://www.openstreetmap.org/export/embed.html` +
+            `?bbox=${encodeURIComponent(bbox)}` +
+            `&layer=mapnik` +
+            `&marker=${encodeURIComponent(marker)}`;
+
+        iframe.src = url;
+        iframe.title = `Mapa místa události (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
     }
 
     function escapeHtml(s) {
         return (s ?? '').toString().replace(/[&<>"']/g, c => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
         }[c]));
     }
 
+    window.selectEvent = selectEvent;
     window.onApprove = onApprove;
     window.onReject = onReject;
-    window.selectEvent = selectEvent;
-
-    window.addEventListener('resize', () => {
-        if (state.map) state.map.invalidateSize(true);
-    });
 
     loadEvents();
     setInterval(loadEvents, 10000);

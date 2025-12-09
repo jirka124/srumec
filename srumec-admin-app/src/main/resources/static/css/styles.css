@@ -77,16 +77,6 @@ body {
     border: 1px solid #3b82f6;
 }
 
-.badge {
-    display: inline-block;
-    padding: 0 6px;
-    margin-left: 6px;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
 .btns {
     margin-top: 10px;
     display: flex;
@@ -112,30 +102,25 @@ body {
     color: white;
 }
 
-.btn.ghost {
-    background: transparent;
-    border: 1px solid #9ca3af;
-    color: #374151;
-}
-
 .detail-title {
     margin: 0 0 4px;
     font-size: 1rem;
 }
 
-#map {
+/* OSM interaktivní mapa v iframe */
+#mapFrame {
     width: 100%;
     height: 260px;
     border-radius: 6px;
     border: 1px solid #e5e7eb;
+    display: block;
 }
 
 @media (max-width: 900px) {
     .wrap {
         grid-template-columns: 1fr;
     }
-
-    #map {
+    #mapFrame {
         height: 220px;
     }
 }
