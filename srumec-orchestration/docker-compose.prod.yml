@@ -3,6 +3,8 @@ services:
     build: ../srumec-rabbitmq-service
     env_file:
       - ../srumec-rabbitmq-service/.env.prod
+    networks:
+      - shrumec-net
 
   events-service:
     build:
@@ -31,6 +33,8 @@ services:
     command: ["npm", "run", "db:init"]
     env_file:
       - ../srumec-events-service/.env.prod
+    networks:
+      - shrumec-net
 
   chats-service:
     build:
