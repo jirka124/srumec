@@ -120,6 +120,12 @@ services:
       - shrumec-net
 
   admin-api:
+    ports:
+      - "8001:8080"
+    networks:
+      - shrumec-net
+
+  admin-postgres:
     networks:
       - shrumec-net
 
