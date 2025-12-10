@@ -18,6 +18,9 @@ public class AdminEventsController {
         this.eventsServiceClient = eventsServiceClient;
     }
 
+    // ------------------------
+    // GET /pending
+    // ------------------------
     @GetMapping("/pending")
     public ResponseEntity<List<EventDto>> getPendingEvents(
             @RequestHeader(name = "Authorization", required = false) String authHeader,
@@ -28,6 +31,9 @@ public class AdminEventsController {
         return ResponseEntity.ok(pending);
     }
 
+    // ------------------------
+    // POST /{id}/approve
+    // ------------------------
     @PostMapping("/{id}/approve")
     public ResponseEntity<EventDto> approveEvent(
             @PathVariable String id,
@@ -39,6 +45,9 @@ public class AdminEventsController {
         return ResponseEntity.ok(updated);
     }
 
+    // ------------------------
+    // POST /{id}/reject
+    // ------------------------
     @PostMapping("/{id}/reject")
     public ResponseEntity<EventDto> rejectEvent(
             @PathVariable String id,
@@ -50,23 +59,27 @@ public class AdminEventsController {
         return ResponseEntity.ok(updated);
     }
 
+    // ----------------------------------------------------------
+    // TOKEN RESOLUTION LOGIC
+    // 1) Authorization: Bearer xyz
+    // 2) JWT_TOKEN cookie
+    // 3) return null → fallback in EventsServiceClient
+    // ----------------------------------------------------------
     private String resolveToken(String authHeader, HttpServletRequest request) {
-        // 1) zkusit Authorization: Bearer ...
+        // 1) Zkus Bearer token z headeru
         String token = extractBearerToken(authHeader);
-        if (token != null) {
-            return token;
-        }
+        if (token != null) return token;
 
-        // 2) pokud není header, zkusit cookie JWT_TOKEN
+        // 2) Zkus JWT cookie
         if (request.getCookies() != null) {
-            for (Cookie c : request.getCookies()) {
-                if ("JWT_TOKEN".equals(c.getName())) {
-                    return c.getValue();
+            for (Cookie cookie : request.getCookies()) {
+                if ("JWT_TOKEN".equals(cookie.getName())) {
+                    return cookie.getValue();
                 }
             }
         }
 
-        // 3) jinak nic → EventsServiceClient použije defaultToken z configu
+        // 3) Nic → necháme EventsServiceClient použít defaultToken
         return null;
     }
 
