@@ -19,4 +19,8 @@ srumec:
 events-service:
   base-url: http://localhost:4000
   token: >-
-    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNzA3MjM3LTEyNDUtNDE5OC1hNDExLWFjMmJjMTdiNTQwNyIsInJvbGUiOiJhZG1pbiIsIm5hbWUiOiJTdXBlciBBZG1pbiIsImV4cCI6MTc2NTMzODI4OH0.mtKur-OgWqsb4Eq11RjY_NIAzRY8ZRf_CwjooeH1YZA
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBhMDg3ZTQ2LWFmNzQtNDJkMy1hYjA2LTY0NTE2M2QwYTliMSIsInJvbGUiOiJhZG1pbiIsIm5hbWUiOiJTdXBlciBBZG1pbiIsImV4cCI6MTc2NTUxNDQ4MX0.Utqc1qCvycSlqsp3erQcJd8l1BP9NjF1LxypWuGj6hM
+
+auth-service:
+  base-url: http://auth-gateway  # uvnitř docker sítě, port 80 je default
+

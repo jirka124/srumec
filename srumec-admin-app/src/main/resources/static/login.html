@@ -1,45 +1,73 @@
 <!doctype html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Přihlášení – Správce</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8">
+  <title>Přihlášení do Admina</title>
+  <style>
+    body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; }
+    .login-card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
+    input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .error { color: #ef4444; margin-bottom: 10px; }
+  </style>
 </head>
-<body class="auth">
-<div class="auth-card">
-  <h1>Správce</h1>
-  <p class="muted">Přihlas se pro přístup do admin panelu.</p>
+<body>
 
-  <!-- chybová hláška při ?error -->
-  <div id="error" class="alert" style="display:none;">Nesprávné jméno nebo heslo.</div>
-  <!-- info při ?logout -->
-  <div id="logout" class="note" style="display:none;">Byl jsi odhlášen.</div>
+<div class="login-card">
+  <h2>Přihlášení Admina</h2>
 
-  <!-- src/main/resources/static/login.html -->
-  <form method="post" action="/login" class="form">
-    <label>
-      <span>Uživatelské jméno</span>
-      <input type="text" name="username" required autofocus>
-    </label>
-    <label>
-      <span>Heslo</span>
-      <input type="password" name="password" required>
-    </label>
-    <button type="submit" class="btn">Přihlásit se</button>
+  <div id="error-message" class="error" style="display: none;"></div>
+
+  <form id="login-form">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Heslo" required>
+    <button type="submit">Přihlásit se</button>
   </form>
-
-
-  <p class="muted small" style="margin-top:12px;">
-    Výchozí přihlašovací údaje lze změnit v <code>application.yml</code> (admin.username / admin.password).
-  </p>
 </div>
 
 <script>
-  // zobraz stav podle query paramů ?error / ?logout
-  const qs = new URLSearchParams(location.search);
-  if (qs.has('error')) document.getElementById('error').style.display = 'block';
-  if (qs.has('logout')) document.getElementById('logout').style.display = 'block';
+  document.getElementById('login-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('error-message');
+
+    errorMessage.style.display = 'none';
+
+    try {
+      // Cílová URL autentizace přes admin-api (stejný origin!)
+      const API_URL = '/auth/login';
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: email, password: password })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        const jwtToken = data.access_token;
+
+        document.cookie = `JWT_TOKEN=${jwtToken}; path=/; max-age=3600; SameSite=Strict`;
+
+        window.location.href = "/index.html";
+
+      } else {
+        errorMessage.textContent = 'Chyba: Špatné přihlašovací údaje nebo nedostatečná práva.';
+        errorMessage.style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Network Error:', error);
+      errorMessage.textContent = 'Chyba spojení s autentizačním serverem.';
+      errorMessage.style.display = 'block';
+    }
+  });
 </script>
+
+
 </body>
 </html>
