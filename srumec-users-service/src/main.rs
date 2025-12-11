@@ -1,11 +1,11 @@
+use std::str;
 use uuid::Uuid;
 use regex::Regex;
-use std::io::{Read, Write};
 use serde::{Serialize, Deserialize};
-use std::net::{TcpListener, TcpStream};
-use postgres::{Client, NoTls, Error};
 
-const DB_URL: Option<&'static str> = option_env!("DATABASE_URL");
+use tokio::net::{TcpListener, TcpStream};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio_postgres::{NoTls};
 
 const NOT_FOUND: &str = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
 const BAD_REQUEST: &str = "HTTP/1.1 400 BAD REQUEST\r\n\r\n";
@@ -23,182 +23,100 @@ struct User
     banned: Option<bool>,
 }
 
-fn main()
+#[tokio::main]
+async fn main()
 {
-    if let Err(error) = setup_database()
-    {
-        println!("Error: {}", error);
+    let db_url = option_env!("DATABASE_URL").unwrap_or("postgres://postgres:password@localhost:5432/postgres");
 
-        return;
-    }
+    // setup database
+    setup_database(db_url).await.expect("DB setup failed");
 
     // start the server
-    let listener: TcpListener = TcpListener::bind(format!("0.0.0.0:8080")).unwrap();
+    let listener = TcpListener::bind("0.0.0.0:8080").await.expect("Cannot bind port 8080");
 
-    println!("Server started at port 8080.");
+    println!("Server started on port 8080");
 
     // handle the client
-    for stream in listener.incoming()
+    loop
     {
-        match stream
+        match listener.accept().await
         {
-            Ok(stream) => { handle_client(stream); }
-
-            Err(error) => { println!("Error: {}", error); }
-        }
-    }
-}
-
-fn handle_client(mut stream: TcpStream)
-{
-    let mut buffer = [0; 1024];
-    let mut request: String = String::new();
-
-    match stream.read(&mut buffer)
-    {
-        Ok(size) =>
-        {
-            request.push_str(String::from_utf8_lossy(&buffer[0..size]).as_ref());
-
-            let (status_line, content) = match &*request
+            Ok((stream, _)) =>
             {
-                req if req.starts_with("GET /users/") => handle_get_request(req),
-                req if req.starts_with("GET /users") => handle_get_all_request(req),
-                req if req.starts_with("POST /users") => handle_post_request(req),
-                req if req.starts_with("PUT /users/") => handle_put_request(req),
-                req if req.starts_with("DELETE /users/") => handle_delete_request(req),
-
-                _ => (NOT_FOUND.to_string(), "404 Not Found".to_string()),
-            };
-
-            // take the HTTP response and send it over the connection
-            stream.write_all(format!("{}{}", status_line, content).as_bytes()).unwrap();
-        }
-
-        Err(error) => { println!("Error: {}", error); }
-    }
-}
-
-// get a user with the matching id
-fn handle_get_request(request: &str) -> (String, String)
-{
-    match (get_user_id(&request).parse::<Uuid>(), Client::connect(DB_URL.unwrap_or(""), NoTls))
-    {
-        (Ok(id), Ok(mut client)) =>
-            match client.query_one("SELECT * FROM users WHERE id = $1", &[&id])
-            {
-                Ok(row) =>
+                tokio::spawn(async move
                 {
-                    let user = User { id: row.get(0), name: row.get(1), email: row.get(2), role: row.get(3), banned: row.get(4) };
-
-                    (OK_RESPONSE.to_string(), serde_json::to_string(&user).unwrap())
-                }
-
-                _ => (NOT_FOUND.to_string(), "User not found.".to_string()),
+                    if let Err(e) = handle_client(stream, db_url).await
+                    {
+                        eprintln!("Client error: {:?}", e);
+                    }
+                });
             }
-
-        _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
+            Err(e) => eprintln!("Accept error: {:?}", e),
+        }
     }
 }
 
-// get all users
-fn handle_get_all_request(_request: &str) -> (String, String)
+async fn handle_client(mut stream: TcpStream, db_url: &str) -> Result<(), Box<dyn std::error::Error>>
 {
-    match Client::connect(DB_URL.unwrap_or(""), NoTls)
+    let mut buffer = Vec::new();
+
+    // read until headers end (\r\n\r\n)
+    loop
     {
-        Ok(mut client) =>
+        let mut chunk = [0; 512];
+        let n = stream.read(&mut chunk).await?;
+
+        if n == 0
         {
-            let mut users: Vec<User> = Vec::new();
-
-            for row in client.query("SELECT * FROM users", &[]).unwrap()
-            {
-                users.push(User { id: row.get(0), name: row.get(1), email: row.get(2), role: row.get(3), banned: row.get(4) });
-            }
-
-            (OK_RESPONSE.to_string(), serde_json::to_string(&users).unwrap())
+            break;
         }
 
-        _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
-    }
-}
+        buffer.extend_from_slice(&chunk[..n]);
 
-// add a user
-fn handle_post_request(request: &str) -> (String, String)
-{
-    let regex_email = Regex::new(r"^[^\s@.]+(\.[^\s@.]+)*@[^\s@.]+(\.[^\s@.]+)+$").unwrap();
-
-    match (get_user_request_body(&request), Client::connect(DB_URL.unwrap_or(""), NoTls))
-    {
-        (Ok(user), Ok(mut client)) =>
+        if buffer.windows(4).any(|w| w == b"\r\n\r\n")
         {
-            // check if the email already exists
-            if client.query_one("SELECT EXISTS (SELECT 1 FROM users WHERE email = $1)", &[&user.email]).unwrap().get(0)
-            {
-                return (BAD_REQUEST.to_string(), "Email already exists.".to_string());
-            }
-
-            // validate the email
-            if !regex_email.is_match(&user.email)
-            {
-                return (BAD_REQUEST.to_string(), "Invalid email format.".to_string());
-            }
-
-            client.execute("INSERT INTO users (name, email) VALUES ($1, $2)", &[&user.name, &user.email]).unwrap();
-
-            (OK_RESPONSE.to_string(), "User created successfully.".to_string())
+            break;
         }
-
-        _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
     }
-}
 
-// update a user with the matching id
-fn handle_put_request(request: &str) -> (String, String)
-{
-    match (get_user_id(&request).parse::<Uuid>(), get_user_request_body(&request), Client::connect(DB_URL.unwrap_or(""), NoTls))
+    let request = String::from_utf8_lossy(&buffer);
+
+    let (status, content) = match &request[..]
     {
-        (Ok(id), Ok(user), Ok(mut client)) =>
-        {
-            client.execute("UPDATE users SET name = $1, email = $2, role = $3, banned = $4 WHERE id = $5", &[&user.name, &user.email, &user.role, &user.banned, &id]).unwrap();
+        req if req.starts_with("GET /users/") => handle_get_request(&req, db_url).await,
+        req if req.starts_with("GET /users") => handle_get_all_request(db_url).await,
+        req if req.starts_with("POST /users") => handle_post_request(&req, db_url).await,
+        req if req.starts_with("PUT /users/") => handle_put_request(&req, db_url).await,
+        req if req.starts_with("DELETE /users/") => handle_delete_request(&req, db_url).await,
 
-            (OK_RESPONSE.to_string(), "User updated successfully.".to_string())
-        }
+        _ => (NOT_FOUND.to_string(), "404 Not Found".to_string()),
+    };
 
-        _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
-    }
+    let response = format!("{}{}", status, content);
+
+    // take the HTTP response and send it over the connection
+    stream.write_all(response.as_bytes()).await?;
+
+    Ok(())
 }
 
-// delete a user with the matching id
-fn handle_delete_request(request: &str) -> (String, String)
+async fn setup_database(db_url: &str) -> Result<(), Box<dyn std::error::Error>>
 {
-    match (get_user_id(&request).parse::<Uuid>(), Client::connect(DB_URL.unwrap_or(""), NoTls))
+    let (client, connection) = tokio_postgres::connect(db_url, NoTls).await?;
+
+    tokio::spawn(async move
     {
-        (Ok(id), Ok(mut client)) =>
+        if let Err(e) = connection.await
         {
-            if client.execute("DELETE FROM users WHERE id = $1", &[&id]).unwrap() == 0
-            {
-                // no rows were affected
-                return (NOT_FOUND.to_string(), "User not found.".to_string());
-            }
-
-            (OK_RESPONSE.to_string(), "User deleted successfully.".to_string())
+            eprintln!("DB connection error: {:?}", e);
         }
+    });
 
-        _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
-    }
-}
-
-fn setup_database() -> Result<(), Error>
-{
-    // connect to the database
-    let mut client: Client = Client::connect(DB_URL.unwrap_or(""), NoTls)?;
-
-    // add a module for generating uuids
-    client.batch_execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")?;
-
-    // create the table
+    // add a module for generating uuids and create the table
     client.batch_execute(
-        "CREATE TABLE IF NOT EXISTS users
+        "CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+        CREATE TABLE IF NOT EXISTS users
         (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -207,18 +125,174 @@ fn setup_database() -> Result<(), Error>
             role TEXT NOT NULL DEFAULT 'user',
             banned BOOLEAN DEFAULT FALSE
         );"
-    )?;
+    ).await?;
 
     Ok(())
 }
 
-// deserialize the User struct from the HTTP request body
-fn get_user_request_body(request: &str) -> Result<User, serde_json::Error>
+// get a user with the matching id
+async fn handle_get_request(req: &str, db_url: &str) -> (String, String)
 {
-    serde_json::from_str(request.split("\r\n\r\n").last().unwrap_or_default())
+    let id = match Uuid::parse_str(get_user_id_from_request(req))
+    {
+        Ok(uuid) => uuid,
+        Err(_) => return (BAD_REQUEST.to_string(), "User not found.".to_string()),
+    };
+
+    match tokio_postgres::connect(db_url, NoTls).await
+    {
+        Ok((client, connection)) =>
+        {
+            tokio::spawn(async move { connection.await.ok(); });
+
+            match client.query_opt("SELECT id, name, email, role, banned FROM users WHERE id = $1", &[&id]).await
+            {
+                Ok(Some(row)) =>
+                {
+                    let user = User { id: Some(row.get(0)), name: row.get(1), email: row.get(2), role: row.get(3), banned: row.get(4) };
+
+                    (OK_RESPONSE.to_string(), serde_json::to_string(&user).unwrap())
+                }
+                Ok(None) => (NOT_FOUND.to_string(), "User not found.".to_string()),
+                Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB error.".to_string()),
+            }
+        }
+        Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB connection error.".to_string()),
+    }
 }
 
-fn get_user_id(request: &str) -> &str
+// get all users
+async fn handle_get_all_request(db_url: &str) -> (String, String)
 {
-    request.split("/").nth(2).unwrap_or_default().split_whitespace().next().unwrap_or_default()
+    match tokio_postgres::connect(db_url, NoTls).await
+    {
+        Ok((client, connection)) =>
+        {
+            tokio::spawn(async move { connection.await.ok(); });
+
+            match client.query("SELECT id, name, email, role, banned FROM users", &[]).await
+            {
+                Ok(rows) =>
+                {
+                    let users: Vec<User> = rows.into_iter().map(|row| User { id: Some(row.get(0)), name: row.get(1), email: row.get(2), role: row.get(3), banned: row.get(4) }).collect();
+
+                    (OK_RESPONSE.to_string(), serde_json::to_string(&users).unwrap())
+                }
+                Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB query error.".to_string()),
+            }
+        }
+        Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB connection error.".to_string()),
+    }
+}
+
+// add a user
+async fn handle_post_request(req: &str, db_url: &str) -> (String, String)
+{
+    let body = req.split("\r\n\r\n").nth(1).unwrap_or_default();
+
+    let user: User = match serde_json::from_str(body)
+    {
+        Ok(u) => u,
+        Err(_) => return (BAD_REQUEST.to_string(), "Invalid JSON.".to_string()),
+    };
+
+    let email_regex = Regex::new(r"^[^\s@.]+(\.[^\s@.]+)*@[^\s@.]+(\.[^\s@.]+)+$").unwrap();
+
+    // validate the email
+    if !email_regex.is_match(&user.email)
+    {
+        return (BAD_REQUEST.to_string(), "Invalid email format.".to_string());
+    }
+
+    match tokio_postgres::connect(db_url, NoTls).await
+    {
+        Ok((client, connection)) =>
+        {
+            tokio::spawn(async move { connection.await.ok(); });
+
+            let exists = client.query_one("SELECT EXISTS(SELECT 1 FROM users WHERE email=$1)", &[&user.email]).await.unwrap();
+
+            // check if the email already exists
+            if exists.get::<_, bool>(0)
+            {
+                return (BAD_REQUEST.to_string(), "Email already exists.".to_string());
+            }
+
+            if let Err(_) = client.execute("INSERT INTO users (name, email) VALUES ($1, $2)", &[&user.name, &user.email]).await
+            {
+                return (INTERNAL_SERVER_ERROR.to_string(), "DB insert error.".to_string());
+            }
+
+            (OK_RESPONSE.to_string(), "User created successfully.".to_string())
+        }
+        Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB connection error.".to_string()),
+    }
+}
+
+// update a user with the matching id
+async fn handle_put_request(req: &str, db_url: &str) -> (String, String)
+{
+    let id = match Uuid::parse_str(get_user_id_from_request(req))
+    {
+        Ok(uuid) => uuid,
+        Err(_) => return (BAD_REQUEST.to_string(), "Invalid UUID.".to_string()),
+    };
+
+    let body = req.split("\r\n\r\n").nth(1).unwrap_or_default();
+
+    let user: User = match serde_json::from_str(body)
+    {
+        Ok(u) => u,
+        Err(_) => return (BAD_REQUEST.to_string(), "Invalid JSON.".to_string()),
+    };
+
+    match tokio_postgres::connect(db_url, NoTls).await
+    {
+        Ok((client, connection)) =>
+        {
+            tokio::spawn(async move { connection.await.ok(); });
+
+            if let Err(_) = client.execute("UPDATE users SET name=$1, email=$2, role=$3, banned=$4 WHERE id=$5", &[&user.name, &user.email, &user.role, &user.banned, &id]).await
+            {
+                return (INTERNAL_SERVER_ERROR.to_string(), "DB update error.".to_string());
+            }
+
+            (OK_RESPONSE.to_string(), "User updated successfully".to_string())
+        }
+        Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB connection error.".to_string()),
+    }
+}
+
+// delete a user with the matching id
+async fn handle_delete_request(req: &str, db_url: &str) -> (String, String)
+{
+    let id = match Uuid::parse_str(get_user_id_from_request(req))
+    {
+        Ok(uuid) => uuid,
+        Err(_) => return (BAD_REQUEST.to_string(), "Invalid UUID.".to_string()),
+    };
+
+    match tokio_postgres::connect(db_url, NoTls).await
+    {
+        Ok((client, connection)) =>
+        {
+            tokio::spawn(async move { connection.await.ok(); });
+
+            match client.execute("DELETE FROM users WHERE id=$1", &[&id]).await
+            {
+                // no rows were affected
+                Ok(0) => (NOT_FOUND.to_string(), "User not found.".to_string()),
+
+                Ok(_) => (OK_RESPONSE.to_string(), "User deleted successfully.".to_string()),
+                Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB delete error.".to_string()),
+            }
+        }
+        Err(_) => (INTERNAL_SERVER_ERROR.to_string(), "DB connection error.".to_string()),
+    }
+}
+
+// extract the user ID segment from a request path like "/users/<id>"
+fn get_user_id_from_request(req: &str) -> &str
+{
+    req.split('/').nth(2).map(|s| s.split_whitespace().next().unwrap_or_default()).unwrap_or_default()
 }
